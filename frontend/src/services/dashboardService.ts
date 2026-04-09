@@ -41,12 +41,21 @@ export class DashboardService {
       return acc;
     }, timeSeriesMap);
 
-    const timeSeriesData = Object.values(timeSeriesMap).sort((a: any, b: any) => a.time.localeCompare(b.time));
-
     // Get unique list of items, stores, and channels for the UI dropdowns
     const availableItems = Array.from(new Set(events.map(e => e.menu_name))).sort();
     const availableStores = Array.from(new Set(events.map(e => e.store_name))).sort();
     const availableChannels = Array.from(new Set(events.map(e => e.channel))).sort();
+
+    const timeSeriesData = Object.values(timeSeriesMap).sort((a: any, b: any) => a.time.localeCompare(b.time));
+
+    // Fill missing specific keys with 0 so lines in Recharts do not break
+    timeSeriesData.forEach((dataPoint: any) => {
+      [...availableItems, ...availableStores, ...availableChannels].forEach(key => {
+        if (dataPoint[key] === undefined) {
+          dataPoint[key] = 0;
+        }
+      });
+    });
 
     // Channel Distribution
     const channelStats = events.reduce((acc, event) => {
