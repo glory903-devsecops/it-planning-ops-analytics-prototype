@@ -29,6 +29,11 @@ export function DashboardCharts({
 
   if (!timeSeriesData.length) return null;
 
+  // Calculate the absolute maximum Y value for "총매출액" to fix the Y-axis scale
+  const maxTotalSales = Math.max(...timeSeriesData.map(d => d['총매출액'] || 0));
+  // Add a 10% padding to the top of the max value for better visual headroom
+  const yAxisMax = Math.ceil(maxTotalSales * 1.1);
+
   return (
     <div className="mb-8 w-full">
       {/* Time Series 'Stock' Chart (Full Width) */}
@@ -88,6 +93,7 @@ export function DashboardCharts({
                 minTickGap={10}
               />
               <YAxis 
+                domain={[0, yAxisMax]}
                 tick={{ fill: '#6b7280', fontSize: 12 }} 
                 axisLine={false} 
                 tickLine={false}
