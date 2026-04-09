@@ -9,19 +9,18 @@ export class DashboardService {
     ]);
 
     // Group sales data by hour for the Time-Series (Stock-like) Chart
-    const timeSeriesMap = events.reduce((acc, event) => {
+    const timeSeriesMap: Record<string, any> = {};
+    for (let i = 0; i < 24; i++) {
+      const h = i.toString().padStart(2, '0');
+      timeSeriesMap[`${h}:00`] = { time: `${h}:00`, 총매출액: 0 };
+    }
+
+    events.reduce((acc, event) => {
       // Extract hour format, eg "2024-04-10 14:00" -> "14:00"
       const timeMatch = event.timestamp.match(/ (\d{2}):/);
       if (!timeMatch) return acc;
       
       const hour = `${timeMatch[1]}:00`;
-      
-      if (!acc[hour]) {
-        acc[hour] = { 
-          time: hour, 
-          총매출액: 0
-        };
-      }
       
       if (event.status === '완료') {
         acc[hour]['총매출액'] += event.total_price;
@@ -33,16 +32,21 @@ export class DashboardService {
         // Track specific stores
         if (!acc[hour][event.store_name]) acc[hour][event.store_name] = 0;
         acc[hour][event.store_name] += event.total_price;
+
+        // Track specific channels
+        if (!acc[hour][event.channel]) acc[hour][event.channel] = 0;
+        acc[hour][event.channel] += event.total_price;
       }
       
       return acc;
-    }, {} as Record<string, any>);
+    }, timeSeriesMap);
 
-    const timeSeriesData = Object.values(timeSeriesMap).sort((a, b) => a.time.localeCompare(b.time));
+    const timeSeriesData = Object.values(timeSeriesMap).sort((a: any, b: any) => a.time.localeCompare(b.time));
 
-    // Get unique list of items and stores for the UI dropdowns
+    // Get unique list of items, stores, and channels for the UI dropdowns
     const availableItems = Array.from(new Set(events.map(e => e.menu_name))).sort();
     const availableStores = Array.from(new Set(events.map(e => e.store_name))).sort();
+    const availableChannels = Array.from(new Set(events.map(e => e.channel))).sort();
 
     // Channel Distribution
     const channelStats = events.reduce((acc, event) => {
@@ -82,6 +86,7 @@ export class DashboardService {
       timeSeriesData,
       availableItems,
       availableStores,
+      availableChannels,
       channelDistribution,
       topItems,
       recentSales

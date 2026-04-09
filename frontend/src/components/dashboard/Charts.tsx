@@ -7,48 +7,56 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
+  ResponsiveContainer
 } from 'recharts';
 
 interface ChartProps {
   timeSeriesData: any[];
   availableItems?: string[];
   availableStores?: string[];
-  channelDistribution: any[];
+  availableChannels?: string[];
+  channelDistribution?: any[]; // Kept for backwards compatibility but not used here anymore
 }
 
-const COLORS = ['#003B6D', '#E85A4F', '#E9B000', '#8F9779', '#4B3832'];
-
-export function DashboardCharts({ timeSeriesData, availableItems = [], availableStores = [], channelDistribution }: ChartProps) {
-  const [filterMode, setFilterMode] = useState<'item' | 'store'>('item');
+export function DashboardCharts({ 
+  timeSeriesData, 
+  availableItems = [], 
+  availableStores = [], 
+  availableChannels = [] 
+}: ChartProps) {
+  const [filterMode, setFilterMode] = useState<'item' | 'store' | 'channel'>('item');
   const [selectedFilter, setSelectedFilter] = useState('총매출액');
 
-  if (!timeSeriesData.length || !channelDistribution.length) return null;
+  if (!timeSeriesData.length) return null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      {/* Time Series 'Stock' Chart */}
-      <Card className="border border-gray-100 shadow-sm rounded-xl overflow-hidden mb-6 lg:mb-0 bg-white">
+    <div className="mb-8 w-full">
+      {/* Time Series 'Stock' Chart (Full Width) */}
+      <Card className="border border-gray-100 shadow-sm rounded-xl overflow-hidden bg-white w-full">
         <CardHeader className="bg-gray-50/50 border-b border-gray-100 flex flex-col gap-3 py-4">
-          <CardTitle className="text-lg font-bold text-[#002C5F] tracking-tight">시간대별 매출 추이 (Stock View)</CardTitle>
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-lg font-bold text-[#002C5F] tracking-tight">시간대별 매출 추이 (Stock View)</CardTitle>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center mt-2">
             {/* Parallel Buttons */}
             <div className="flex bg-gray-100 p-1 rounded-lg">
               <button 
                 onClick={() => { setFilterMode('item'); setSelectedFilter('총매출액'); }}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${filterMode === 'item' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filterMode === 'item' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 품목별 보기
               </button>
               <button 
                 onClick={() => { setFilterMode('store'); setSelectedFilter('총매출액'); }}
-                className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${filterMode === 'store' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filterMode === 'store' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 지점별 보기
+              </button>
+              <button 
+                onClick={() => { setFilterMode('channel'); setSelectedFilter('총매출액'); }}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filterMode === 'channel' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                채널별 보기
               </button>
             </div>
 
@@ -56,33 +64,38 @@ export function DashboardCharts({ timeSeriesData, availableItems = [], available
             <select 
               value={selectedFilter}
               onChange={(e) => setSelectedFilter(e.target.value)}
-              className="text-sm border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 max-w-[200px]"
+              className="text-sm border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 max-w-[250px]"
             >
-              <option value="총매출액">종합 총액 (All)</option>
-              {filterMode === 'item' 
-                ? availableItems.map(item => <option key={item} value={item}>{item}</option>)
-                : availableStores.map(store => <option key={store} value={store}>{store}</option>)
-              }
+              <option value="총매출액">종합 총액 (전체 통합)</option>
+              {filterMode === 'item' && availableItems.map(item => <option key={item} value={item}>{item}</option>)}
+              {filterMode === 'store' && availableStores.map(store => <option key={store} value={store}>{store}</option>)}
+              {filterMode === 'channel' && availableChannels.map(channel => <option key={channel} value={channel}>{channel}</option>)}
             </select>
           </div>
         </CardHeader>
-        <CardContent className="h-[340px] pt-6">
+        <CardContent className="h-[450px] pt-6">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={timeSeriesData}
-              margin={{ top: 10, right: 30, left: 10, bottom: 0 }}
+              margin={{ top: 20, right: 40, left: 20, bottom: 10 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
-              <XAxis dataKey="time" tick={{ fill: '#6b7280', fontSize: 12 }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" vertical={true} stroke="#f3f4f6" />
+              <XAxis 
+                dataKey="time" 
+                tick={{ fill: '#6b7280', fontSize: 12 }} 
+                axisLine={false} 
+                tickLine={false}
+                minTickGap={10}
+              />
               <YAxis 
                 tick={{ fill: '#6b7280', fontSize: 12 }} 
                 axisLine={false} 
                 tickLine={false}
-                tickFormatter={(value) => value >= 1000 ? `${(value/10000).toFixed(0)}만` : value}
+                tickFormatter={(value) => value === 0 ? '0' : value >= 10000 ? `${(value/10000).toFixed(0)}만` : value.toLocaleString()}
               />
               <Tooltip 
-                cursor={{ stroke: '#d1d5db', strokeWidth: 1, strokeDasharray: '3 3' }}
-                contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                cursor={{ stroke: '#003B6D', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+                contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}
                 formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, selectedFilter]}
                 labelFormatter={(label) => `시간: ${label}`}
               />
@@ -92,46 +105,9 @@ export function DashboardCharts({ timeSeriesData, availableItems = [], available
                 stroke="#003B6D" 
                 strokeWidth={3}
                 dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
-                activeDot={{ r: 6, strokeWidth: 0, fill: '#E85A4F' }}
+                activeDot={{ r: 7, strokeWidth: 0, fill: '#E85A4F' }}
               />
             </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Channel Distribution Pie Chart */}
-      <Card className="border border-gray-100 shadow-sm rounded-xl overflow-hidden bg-white">
-        <CardHeader className="bg-gray-50/50 border-b border-gray-100 py-4">
-          <CardTitle className="text-lg font-bold text-[#002C5F] tracking-tight">주문/결제 채널별 매출 비중</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[340px] pt-6 pb-2">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={channelDistribution}
-                cx="50%"
-                cy="45%"
-                innerRadius="50%"
-                outerRadius="75%"
-                paddingAngle={4}
-                dataKey="value"
-                stroke="none"
-              >
-                {channelDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, '매출액']}
-              />
-              <Legend 
-                verticalAlign="bottom" 
-                align="center" 
-                layout="horizontal" 
-                wrapperStyle={{ fontSize: '13px', fontWeight: 500 }}
-              />
-            </PieChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>

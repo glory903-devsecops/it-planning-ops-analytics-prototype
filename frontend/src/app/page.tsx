@@ -49,6 +49,7 @@ export default function Home() {
               timeSeriesData={data.timeSeriesData} 
               availableItems={data.availableItems}
               availableStores={data.availableStores}
+              availableChannels={data.availableChannels}
               channelDistribution={data.channelDistribution} 
             />
             {/* Recent Sales Table */}
