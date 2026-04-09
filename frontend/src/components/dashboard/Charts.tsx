@@ -24,8 +24,34 @@ export function DashboardCharts({
   availableStores = [], 
   availableChannels = [] 
 }: ChartProps) {
-  const [filterMode, setFilterMode] = useState<'item' | 'store' | 'channel'>('item');
-  const [selectedFilter, setSelectedFilter] = useState('총매출액');
+  const [selectedItem, setSelectedItem] = useState('전체 품목');
+  const [selectedStore, setSelectedStore] = useState('전체 지점');
+  const [selectedChannel, setSelectedChannel] = useState('전체 채널');
+  const [selectedDataKey, setSelectedDataKey] = useState('총매출액');
+
+  const handleItemChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedItem(val);
+    setSelectedStore('전체 지점');
+    setSelectedChannel('전체 채널');
+    setSelectedDataKey(val === '전체 품목' ? '총매출액' : val);
+  };
+
+  const handleStoreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedStore(val);
+    setSelectedItem('전체 품목');
+    setSelectedChannel('전체 채널');
+    setSelectedDataKey(val === '전체 지점' ? '총매출액' : val);
+  };
+
+  const handleChannelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedChannel(val);
+    setSelectedItem('전체 품목');
+    setSelectedStore('전체 지점');
+    setSelectedDataKey(val === '전체 채널' ? '총매출액' : val);
+  };
 
   if (!timeSeriesData.length) return null;
 
@@ -43,39 +69,35 @@ export function DashboardCharts({
             <CardTitle className="text-lg font-bold text-[#002C5F] tracking-tight">시간대별 매출 추이 (Stock View)</CardTitle>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center mt-2">
-            {/* Parallel Buttons */}
-            <div className="flex bg-gray-100 p-1 rounded-lg">
-              <button 
-                onClick={() => { setFilterMode('item'); setSelectedFilter('총매출액'); }}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filterMode === 'item' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-              >
-                품목별 보기
-              </button>
-              <button 
-                onClick={() => { setFilterMode('store'); setSelectedFilter('총매출액'); }}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filterMode === 'store' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-              >
-                지점별 보기
-              </button>
-              <button 
-                onClick={() => { setFilterMode('channel'); setSelectedFilter('총매출액'); }}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${filterMode === 'channel' ? 'bg-white text-[#002C5F] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-              >
-                채널별 보기
-              </button>
-            </div>
-
-            {/* Dynamic Dropdown */}
+            
+            {/* 3 Parallel Dropdowns */}
             <select 
-              value={selectedFilter}
-              onChange={(e) => setSelectedFilter(e.target.value)}
-              className="text-sm border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 max-w-[250px]"
+              value={selectedItem}
+              onChange={handleItemChange}
+              className="text-sm font-medium border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 sm:max-w-[180px]"
             >
-              <option value="총매출액">종합 총액 (전체 통합)</option>
-              {filterMode === 'item' && availableItems.map(item => <option key={item} value={item}>{item}</option>)}
-              {filterMode === 'store' && availableStores.map(store => <option key={store} value={store}>{store}</option>)}
-              {filterMode === 'channel' && availableChannels.map(channel => <option key={channel} value={channel}>{channel}</option>)}
+              <option value="전체 품목">전체 품목</option>
+              {availableItems.map(item => <option key={item} value={item}>{item}</option>)}
             </select>
+
+            <select 
+              value={selectedStore}
+              onChange={handleStoreChange}
+              className="text-sm font-medium border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 sm:max-w-[180px]"
+            >
+              <option value="전체 지점">전체 지점</option>
+              {availableStores.map(store => <option key={store} value={store}>{store}</option>)}
+            </select>
+
+            <select 
+              value={selectedChannel}
+              onChange={handleChannelChange}
+              className="text-sm font-medium border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 sm:max-w-[180px]"
+            >
+              <option value="전체 채널">전체 채널</option>
+              {availableChannels.map(channel => <option key={channel} value={channel}>{channel}</option>)}
+            </select>
+
           </div>
         </CardHeader>
         <CardContent className="h-[450px] pt-6">
@@ -102,12 +124,12 @@ export function DashboardCharts({
               <Tooltip 
                 cursor={{ stroke: '#003B6D', strokeWidth: 1.5, strokeDasharray: '4 4' }}
                 contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}
-                formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, selectedFilter]}
+                formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, selectedDataKey]}
                 labelFormatter={(label) => `시간: ${label}`}
               />
               <Line 
                 type="monotone" 
-                dataKey={selectedFilter} 
+                dataKey={selectedDataKey} 
                 stroke="#003B6D" 
                 strokeWidth={3}
                 dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
