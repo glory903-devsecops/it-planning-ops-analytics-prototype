@@ -1,34 +1,54 @@
 import React from 'react';
 import { Search, Menu, TrendingUp, Truck, Network, Bell } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  const isSales = pathname === '/';
+  const isLogistics = pathname?.startsWith('/logistics');
+  const isNetwork = pathname?.startsWith('/network');
+
   return (
-    <div className="flex h-screen bg-gray-50 text-gray-900 overflow-hidden font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm justify-between">
+    <div className="flex h-screen bg-[#001D3D] text-gray-900 overflow-hidden font-sans font-light relative">
+      {/* Premium Background Image */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-40 mix-blend-overlay bg-cover bg-center bg-no-repeat fixed"
+        style={{ backgroundImage: `url('/images/dashboard_bg.png')` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#001D3D]/80 via-transparent to-black/20 pointer-events-none" />
+      {/* Sidebar with Glassmorphism */}
+      <aside className="w-64 bg-white/90 backdrop-blur-xl border-r border-white/50 flex flex-col shadow-[4px_0_24px_-10px_rgba(0,0,0,0.05)] justify-between shrink-0 z-20">
         <div>
-          <div className="p-6 border-b border-gray-200 mb-4 h-16 flex items-center">
+          <div className="p-6 mb-4 h-20 flex items-center bg-gradient-to-br from-white/60 to-transparent border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <div className="bg-[#002C5F] text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xl shadow-sm tracking-widest">
+              <div className="bg-gradient-to-br from-[#003B6D] to-[#001D3D] text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-2xl shadow-md tracking-wider">
                 E
               </div>
               <span className="font-bold text-xl tracking-tight text-[#002C5F]">이디야 AX</span>
             </div>
           </div>
           
-          <nav className="px-4 space-y-1">
-            <a href="#" className="flex items-center space-x-3 bg-blue-50 text-[#003B6D] px-3 py-2.5 rounded-lg font-medium transition-colors">
-              <TrendingUp className="w-5 h-5 text-[#003B6D]" />
-              <span>매출 인사이트</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium transition-colors">
-              <Truck className="w-5 h-5 text-gray-400" />
-              <span>물류 인사이트</span>
-            </a>
-            <a href="#" className="flex items-center space-x-3 text-gray-600 hover:bg-gray-50 px-3 py-2.5 rounded-lg font-medium transition-colors">
-              <Network className="w-5 h-5 text-gray-400" />
-              <span>네트워크 인사이트</span>
-            </a>
+          <nav className="px-4 space-y-2 mt-4">
+            <Link href="/" className={`group flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${isSales ? 'bg-gradient-to-r from-blue-50 to-transparent text-[#003B6D] shadow-sm ring-1 ring-blue-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}>
+              <div className={`p-1.5 rounded-lg transition-colors ${isSales ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
+                 <TrendingUp className={`w-5 h-5 transition-transform ${isSales ? 'text-[#003B6D] scale-110' : 'text-gray-400 group-hover:text-blue-500 group-hover:scale-110'}`} />
+              </div>
+              <span className={isSales ? 'font-bold' : ''}>매출 인사이트</span>
+            </Link>
+            <Link href="/logistics" className={`group flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${isLogistics ? 'bg-gradient-to-r from-blue-50 to-transparent text-[#003B6D] shadow-sm ring-1 ring-blue-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}>
+              <div className={`p-1.5 rounded-lg transition-colors ${isLogistics ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
+                 <Truck className={`w-5 h-5 transition-transform ${isLogistics ? 'text-[#003B6D] scale-110' : 'text-gray-400 group-hover:text-blue-500 group-hover:scale-110'}`} />
+              </div>
+              <span className={isLogistics ? 'font-bold' : ''}>물류 인사이트</span>
+            </Link>
+            <Link href="/network" className={`group flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${isNetwork ? 'bg-gradient-to-r from-blue-50 to-transparent text-[#003B6D] shadow-sm ring-1 ring-blue-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}>
+              <div className={`p-1.5 rounded-lg transition-colors ${isNetwork ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
+                 <Network className={`w-5 h-5 transition-transform ${isNetwork ? 'text-[#003B6D] scale-110' : 'text-gray-400 group-hover:text-blue-500 group-hover:scale-110'}`} />
+              </div>
+              <span className={isNetwork ? 'font-bold' : ''}>네트워크 인사이트</span>
+            </Link>
           </nav>
         </div>
         
@@ -42,28 +62,28 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#F4F7FC]">
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm shrink-0">
+        <header className="h-20 bg-white/70 backdrop-blur-lg border-b border-white flex items-center justify-between px-8 z-10 shrink-0 sticky top-0 shadow-[0_4px_24px_-10px_rgba(0,0,0,0.03)]">
           <div className="flex items-center text-gray-800">
-            <button className="mr-4 lg:hidden">
-              <Menu className="w-6 h-6" />
+            <button className="mr-4 lg:hidden hover:bg-gray-100 p-2 rounded-lg transition-colors">
+              <Menu className="w-6 h-6 text-gray-500" />
             </button>
-            <h1 className="text-xl font-bold tracking-tight">AX Decision Intelligence Platform</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-500 drop-shadow-sm">AX Decision Platform</h1>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <div className="relative hidden md:block">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+          <div className="flex items-center space-x-5">
+            <div className="relative hidden md:block group">
+              <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2 group-focus-within:text-blue-500 transition-colors" />
               <input 
                 type="text" 
-                placeholder="인사이트 검색..." 
-                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003B6D]/20 focus:border-[#003B6D] w-64 transition-shadow bg-gray-50"
+                placeholder="인사이트 통합 검색..." 
+                className="pl-11 pr-4 py-2.5 border border-gray-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#003B6D]/30 focus:border-[#003B6D] w-72 transition-all bg-white/50 backdrop-blur shadow-inner group-hover:border-gray-300"
               />
             </div>
-            <button className="relative p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+            <button className="relative p-2.5 text-gray-500 hover:text-[#003B6D] hover:bg-blue-50 rounded-xl transition-all hover:scale-105 active:scale-95 bg-white shadow-sm border border-gray-100">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 animate-pulse rounded-full border-2 border-white shadow-sm"></span>
             </button>
           </div>
         </header>

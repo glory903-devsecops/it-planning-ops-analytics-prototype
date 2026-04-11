@@ -15,7 +15,6 @@ interface ChartProps {
   availableItems?: string[];
   availableStores?: string[];
   availableChannels?: string[];
-  channelDistribution?: any[]; // Kept for backwards compatibility but not used here anymore
 }
 
 export function DashboardCharts({ 
@@ -55,85 +54,98 @@ export function DashboardCharts({
 
   if (!timeSeriesData.length) return null;
 
-  // Calculate the absolute maximum Y value for "총매출액" to fix the Y-axis scale
   const maxTotalSales = Math.max(...timeSeriesData.map(d => d['총매출액'] || 0));
-  // Add a 10% padding to the top of the max value for better visual headroom
   const yAxisMax = Math.ceil(maxTotalSales * 1.1);
 
   return (
-    <div className="mb-8 w-full">
-      {/* Time Series 'Stock' Chart (Full Width) */}
-      <Card className="border border-gray-100 shadow-sm rounded-xl overflow-hidden bg-white w-full">
-        <CardHeader className="bg-gray-50/50 border-b border-gray-100 flex flex-col gap-3 py-4">
+    <div className="mb-8 w-full group">
+      <Card className="border border-white/40 bg-white/70 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-3xl overflow-hidden group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500">
+        <CardHeader className="bg-gradient-to-r from-gray-50/80 to-transparent border-b border-gray-100/50 flex flex-col gap-4 p-8">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-lg font-bold text-[#002C5F] tracking-tight">시간대별 매출 추이 (Stock View)</CardTitle>
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-8 bg-gradient-to-b from-[#003B6D] to-blue-400 rounded-full" />
+              <CardTitle className="text-xl font-black text-gray-800 tracking-tight">시간대별 매출 트렌드</CardTitle>
+            </div>
+            <span className="text-xs font-bold text-[#003B6D] bg-blue-50 px-3 py-1 rounded-full border border-blue-100">REAL-TIME</span>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center mt-2">
-            
-            {/* 3 Parallel Dropdowns */}
-            <select 
-              value={selectedItem}
-              onChange={handleItemChange}
-              className="text-sm font-medium border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 sm:max-w-[180px]"
-            >
-              <option value="전체 품목">전체 품목</option>
-              {availableItems.map(item => <option key={item} value={item}>{item}</option>)}
-            </select>
-
-            <select 
-              value={selectedStore}
-              onChange={handleStoreChange}
-              className="text-sm font-medium border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 sm:max-w-[180px]"
-            >
-              <option value="전체 지점">전체 지점</option>
-              {availableStores.map(store => <option key={store} value={store}>{store}</option>)}
-            </select>
-
-            <select 
-              value={selectedChannel}
-              onChange={handleChannelChange}
-              className="text-sm font-medium border border-gray-200 rounded-md focus:ring-[#002C5F] focus:border-[#002C5F] py-1.5 px-3 bg-white shadow-sm flex-1 sm:max-w-[180px]"
-            >
-              <option value="전체 채널">전체 채널</option>
-              {availableChannels.map(channel => <option key={channel} value={channel}>{channel}</option>)}
-            </select>
-
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Menu Filter</label>
+              <select 
+                value={selectedItem}
+                onChange={handleItemChange}
+                className="w-full text-sm font-semibold border-none rounded-xl focus:ring-2 focus:ring-[#003B6D]/20 py-2.5 px-4 bg-white/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] appearance-none cursor-pointer transition-all hover:bg-white"
+              >
+                <option value="전체 품목">✨ 전체 품목 점검</option>
+                {availableItems.map(item => <option key={item} value={item}>{item}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Store Filter</label>
+              <select 
+                value={selectedStore}
+                onChange={handleStoreChange}
+                className="w-full text-sm font-semibold border-none rounded-xl focus:ring-2 focus:ring-[#003B6D]/20 py-2.5 px-4 bg-white/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] appearance-none cursor-pointer transition-all hover:bg-white"
+              >
+                <option value="전체 지점">📍 전체 지점 현황</option>
+                {availableStores.map(store => <option key={store} value={store}>{store}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Channel Filter</label>
+              <select 
+                value={selectedChannel}
+                onChange={handleChannelChange}
+                className="w-full text-sm font-semibold border-none rounded-xl focus:ring-2 focus:ring-[#003B6D]/20 py-2.5 px-4 bg-white/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] appearance-none cursor-pointer transition-all hover:bg-white"
+              >
+                <option value="전체 채널">📱 전체 채널 분석</option>
+                {availableChannels.map(channel => <option key={channel} value={channel}>{channel}</option>)}
+              </select>
+            </div>
           </div>
         </CardHeader>
-        <CardContent className="h-[450px] pt-6">
+        <CardContent className="h-[480px] p-8">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={timeSeriesData}
-              margin={{ top: 20, right: 40, left: 20, bottom: 10 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={true} stroke="#f3f4f6" />
+            <LineChart data={timeSeriesData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="0" vertical={false} stroke="#f1f5f9" />
               <XAxis 
                 dataKey="time" 
-                tick={{ fill: '#6b7280', fontSize: 12 }} 
+                tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }} 
                 axisLine={false} 
                 tickLine={false}
-                minTickGap={10}
+                minTickGap={20}
+                dy={10}
               />
               <YAxis 
                 domain={[0, yAxisMax]}
-                tick={{ fill: '#6b7280', fontSize: 12 }} 
+                tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }} 
                 axisLine={false} 
                 tickLine={false}
                 tickFormatter={(value) => value === 0 ? '0' : value >= 10000 ? `${(value/10000).toFixed(0)}만` : value.toLocaleString()}
+                dx={-10}
               />
               <Tooltip 
-                cursor={{ stroke: '#003B6D', strokeWidth: 1.5, strokeDasharray: '4 4' }}
-                contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }}
+                cursor={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                contentStyle={{ 
+                  borderRadius: '20px', 
+                  border: 'none', 
+                  backgroundColor: 'rgba(255,255,255,0.9)', 
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', 
+                  padding: '16px',
+                  fontWeight: 'bold'
+                }}
                 formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, selectedDataKey]}
-                labelFormatter={(label) => `시간: ${label}`}
+                labelStyle={{ color: '#64748b', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase' }}
               />
               <Line 
-                type="monotone" 
+                type="natural" 
                 dataKey={selectedDataKey} 
                 stroke="#003B6D" 
-                strokeWidth={3}
-                dot={{ r: 4, strokeWidth: 2, fill: '#fff' }} 
-                activeDot={{ r: 7, strokeWidth: 0, fill: '#E85A4F' }}
+                strokeWidth={4}
+                dot={false}
+                activeDot={{ r: 8, fill: '#003B6D', stroke: '#fff', strokeWidth: 3 }}
+                animationDuration={1500}
               />
             </LineChart>
           </ResponsiveContainer>

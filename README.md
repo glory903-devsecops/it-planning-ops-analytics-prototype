@@ -1,71 +1,91 @@
-# ☕ 이디야 AX Decision Intelligence Platform
+# ☕ Ediya AX Decision Intelligence Platform (V2)
 
 <div align="center">
   <br />
-  <a href="https://glory903-devsecops.github.io/it-planning-ops-analytics-prototype/" target="_blank">
-    <img src="https://img.shields.io/badge/🚀_LIVE_DEMO_대시보드_바로가기-002C5F?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" />
-  </a>
+  <img src="https://img.shields.io/badge/Aesthetics-Glassmorphism-blue?style=for-the-badge&logo=css3&logoColor=white" />
+  <img src="https://img.shields.io/badge/Architecture-CQRS_%7C_Redis-red?style=for-the-badge&logo=docker&logoColor=white" />
+  <img src="https://img.shields.io/badge/Status-Completed-success?style=for-the-badge" />
+  <br />
+  <br />
+  <strong>"데이터가 흐르고, 인공지능이 결정하며, 비즈니스가 완성되는 곳."</strong>
   <br />
   <br />
 </div>
 
-## 📌 프로젝트 개요
-**이디야 AX Decision Intelligence Platform**은 마케팅, SCM(물류), IT 운영(네트워크) 등 사내 3대 핵심 조직의 의사결정을 돕기 위해 고안된 통합 데이터 비즈니스 플랫폼입니다. 
-
-현재 프로토타입 1단계로써 마케팅 및 상품기획 부서를 타겟으로 한 **[매출 인사이트 (Sales Insights)]** 모듈이 완벽히 개발되어 데모로 제공되고 있습니다.
-
----
-
-## ✨ 핵심 기능 (Sales Insights)
-
-### 📈 1. 동적 주식 그래프 (Time-Series View)
-단순한 정적 차트를 넘어, **"품목별 보기"** 및 **"지점별 보기"** 동적 토글 버튼을 제공하여 주식 그래프처럼 시간대별 매출 추이를 실시간으로 탐색할 수 있습니다. 
-- 품목별 특정 메뉴(예: 'NEW 아메리카노')의 트렌드 파악
-- 지점별 특정 오프라인 매장(예: '강남본점') 매출 흐름 추적
-
-### 🤖 2. 마케팅 최적화 AI Assistant (Ops Decision AI)
-단순한 차트 렌더링에 그치지 않고 AI가 데이터를 실시간으로 읽고 해석하여 액션 플랜을 제시합니다.
-- 대학가 상권 시간대 피크 시 **'세트 할인 푸시 즉시 발송'** 등 업셀링 제안
-- 가맹점 재료 소진 전 자동 발주 권고 등 SCM 사전 연계 안내
-
-### 📊 3. 완벽한 상세 결제 로그 (Sales Log)
-장애 인시던트가 아닌 순수 매출 비즈니스에 초점을 맞춘 **최근 결제 내역** 테이블을 제공합니다. 
-- **[년도, 월, 일, 시간, 품목명, 지점명, 채널, 개수, 결제액]** 컬럼으로 완벽히 분리되어, 엑셀 익스포트 등에 최적화된 경영 데이터 테이블 형식 지원.
+## 📌 플랫폼 소개
+**Ediya AX Decision Intelligence Platform**은 이디야커피의 디지털 전환(AX)을 상징하는 프리미엄 의사결정 포털입니다. 
+전국 매장의 실시간 결제 로그, 원부자재 재고 흐름, 인프라 네트워크 상태를 **Glassmorphism** 기반의 세련된 UI로 통합하여 경영진과 실무자에게 데이터 기반의 명확한 인사이트를 제공합니다.
 
 ---
 
-## 🏛️ 대용량 데이터 및 트래픽 관리 아키텍처 (Enterprise Architecture)
+## 🎨 Modern Premium UI (Glassmorphism)
 
-수천 개의 전국 매장에서 쏟아지는 수백만 건의 실시간 결제 트래픽을 처리하기 위해 다음과 같은 엔터프라이즈 아키텍처 정책이 적용 및 호환되도록 설계되었습니다. (우아한형제들 및 토스증권 벤치마킹)
+본 플랫폼은 단순한 관리 도구를 넘어, 사용자에게 **현대적이고 감각적인 UX**를 제공합니다.
 
-### 1. 데이터베이스 관리: CQRS (명령/조회 책임 분리) 패턴
-*우아한형제들(배달의민족) 데이터 관리 아키텍처 채택*
-- **문제점:** 결제 트랜잭션 빈도가 높은 원본 RDBMS(PostgreSQL 등)에서 집계 쿼리를 쏠 시 심각한 병목(DB Lock) 발생
-- **해결책 (CQRS):** 결제 원본이 쌓이는 **Command DB**와 대시보드 조회를 위한 **Query DB**를 분리합니다. 뒷단에서 집계된 매출 데이터만을 인메모리 **Redis** 나 **Elasticsearch** 넘겨주어, 프론트엔드는 1차 가공된 캐시 데이터만 조회하므로 원본 데이터가 100만 건 이상 쌓여도 렌더링 응답률이 10ms 이하로 유지됩니다.
-
-### 2. 네트워크 트래픽 최적화: Redis Pub/Sub + WebSocket
-*토스증권 실시간 주식 시세 처리 아키텍처 채택*
-- **문제점:** 수만 명의 대시보드 접속자가 동시에 HTTP API를 폴링(Polling)하면 서버 네트워크 포화 발생
-- **해결책:** 대시보드와 백엔드는 **WebSocket**을 사용해 연결을 유지합니다. 전국 매장에서 이벤트가 발생하면 Kafka 등의 디스크 기반 파이프라인을 거치지 않고, 지연시간이 '0'에 가까운 **Redis Pub/Sub** 채널로 브로드캐스트하여 클라이언트 화면(주식형 다이나믹 그래프)에 즉각 렌더링 됩니다. (※ 영구 기록 백업은 Kafka Outbox 패턴을 통해 사이드로 안전하게 분리 송출됩니다.)
+- **심미적 완성도:** 반투명 유리 질감(Backdrop Blur)과 부드러운 그림자를 활용한 Glassmorphism 디자인 적용.
+- **다이내믹 인터랙션:** 데이터 로딩 스켈레톤, 호버 효과, 실시간 차트 애니메이션으로 살아있는 인터페이스 구현.
+- **비즈니스 특화 테마:** 매출(White/Blue), 물류(Red/Soft), 네트워크(Dark/Cyber) 등 각 영역의 성격에 최적화된 컬러 팔레트 사용.
 
 ---
 
-## ⚙️ 실행 방법 (Local Development)
+## ✨ 핵심 대시보드 모듈
+
+### 📊 1. Sales Insight (매출 지능)
+실시간 결제 트래픽을 주식형 차트로 시각화하고, AI가 상권 특성을 분석하여 매출 증대 전략을 제안합니다.
+- **KPI 메트릭:** 총 매출, 주문 건수, 객단가, 베스트셀러의 실시간 모니터링.
+- **Ops Decision AI:** "신촌점 오후 6시 우유 소진 가속화 대응 제안" 등 즉각적인 액션 아이템 노출.
+
+### 📦 2. Logistics Insight (물류 지능)
+전국 매장의 원부자재(원두, 우유, 컵 등) 소진 상태를 AI가 예측하여 품절 전 자동 발주를 유도합니다.
+- **재고 위기 경보:** 품절 임계점 도달 시 시각적 경고 및 물류 배차 최적화 지원.
+- **SCM Optimizer:** 입지별/시즌별 소진 패턴을 학습한 자재 수급 최적화 모델 통합.
+
+### 🌐 3. Network Insight (인프라 지능)
+전국 매장의 POS, 키오스크, 배달 API 연동 상태를 실시간으로 추적하여 장애를 사전에 차단합니다.
+- **Latency Tracking:** API 응답 지연 스파이크 검출 및 장애 로그 상세 보고.
+- **Infra Observer AI:** 시스템 불안정 징후 감지 시 Failover(망 분리) 및 자동 복구 시나리오 제안.
+
+---
+
+## 🏛️ Enterprise Architecture
+
+수백만 건의 데이터를 지연 없이 처리하기 위한 최첨단 기술 아키텍처가 적용되었습니다.
+
+- **CQRS & Cache Layer:** Command와 Query의 책임을 분리하여 대용량 트랜잭션 시에도 10ms 이하의 조회 응답성 보장.
+- **Real-time Engine:** Socket.io 및 Redis Pub/Sub을 활용한 끊김 없는 실시간 데이터 스트리밍.
+- **Robust Simulation:** 30,000개 이상의 가상 데이터를 원자적으로 생성하여 실제와 유사한 운영 환경 구현.
+
+---
+
+## ⚙️ 실행 방법 (Docker Compose)
+
+본 프로젝트는 Docker 환경에서 가장 안정적으로 구동됩니다.
 
 ```bash
-# 종속성 설치
-npm install
-
-# 프론트엔드 개발 서버 실행
-npm run dev
+# 전체 인프라 빌드 및 실행 (Frontend, Backend, Redis, DB)
+docker-compose up -d --build
 ```
 
-> **※ [데이터 시뮬레이션 가이드]**  
-> 탑재된 모든 매출 데이터는 `generate_sales_data.js` 스크립트의 알고리즘(실제 상권 및 메뉴 단가별 가중치 적용 로직)을 통해 랜덤하게 생성된 가상 환경 데이터 파일(`frontend/src/data/mock/salesEvents.ts`)에 의해 구동됩니다.
-> 언제든 스크립트 재실행을 통해 새로운 패턴의 시뮬레이션 데이터를 주입해 볼 수 있습니다.
+**Local 실행 (Terminal 1 - Frontend):**
+```bash
+cd frontend && npm install && npm run dev
+```
+
+**Local 실행 (Terminal 2 - Backend):**
+```bash
+cd backend && npm install && npm run build && npm start
+```
 
 ---
 
-## 🚫 Disclaimer (데이터 면책 조항)
-**본 대시보드 화면 및 리포트 시뮬레이션에 표출되는 메뉴명, 매장명 등은 현장감을 위해 '이디야커피'의 일부 공식 명칭을 차용하였으나, 시스템 내에서 생성되는 모든 매출액 정보, 판매량, 인프라 수치, AI 메시지 등은 실제 영업 데이터와 전혀 무관한 "시스템 시뮬레이션용 가상(Mock) 데이터"입니다.** 
-내부 검토 및 아키텍처 역량 검증 용도로만 활용하십시오!
+## 📺 시네마틱 시연 (Cinematic Walkthrough)
+
+> [!TIP]
+> **실시간 비즈니스 데이터가 반영되는 플랫폼의 실제 모습을 확인하세요.** 30,000건의 트래픽을 지연 없이 처리하며 AI가 실시간으로 의사결정을 지원하는 과정을 담고 있습니다.
+
+![Ediya AX Premium Walkthrough](/Users/glory1994/.gemini/antigravity/brain/8db4ccce-8363-4a7e-a67a-073afc16940d/ediya_ax_premium_walkthrough_1775835122557.webp)
+
+---
+
+## 🚫 Disclaimer
+본 플랫폼에 표출되는 모든 수치와 AI 분석 내용은 실제 데이터와 무관한 **시뮬레이션 가상 데이터**입니다. 시스템 아키텍처 및 디자인 역량 검증용으로만 활용해 주십시오. ☕
