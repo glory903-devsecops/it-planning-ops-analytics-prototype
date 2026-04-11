@@ -135,48 +135,69 @@ export default function Dashboard() {
           </div>
           
           <div className="xl:col-span-1">
-             <div className="bg-[#0B0F1A] border border-white/10 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden group h-full flex flex-col justify-between">
+             <div className="bg-[#0B0F1A]/95 border border-white/10 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden group h-[720px] flex flex-col justify-between backdrop-blur-2xl">
                 <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px] group-hover:bg-blue-600/20 transition-all duration-1000" />
-                <div className="relative z-10 space-y-10">
-                    <div className="flex items-center justify-between">
+                
+                {/* Header */}
+                <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4">
                             <div className="p-4 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-xl ring-4 ring-blue-500/10 group-hover:rotate-12 transition-transform">
                                 <Activity className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <h4 className="font-black text-xl tracking-tight">AI STRATEGY LAB</h4>
-                                <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-60">Neural Decision Core</p>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+                                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest opacity-60">Decision Core Online</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-6">
-                        <div className="p-7 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md space-y-4 hover:bg-white/10 transition-colors cursor-pointer group/card">
-                            <div className="flex items-center gap-3">
-                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-                                <p className="text-[11px] font-black text-green-400 uppercase tracking-widest">Growth Opportunity</p>
-                            </div>
-                            <p className="text-sm font-medium text-gray-300 leading-relaxed font-sans">
-                                점심 시간대 <span className="text-blue-400 font-black underline underline-offset-4">'NEW 아메리카노'</span> 판매 비중이 평소보다 12% 높게 유지되고 있습니다. 오피스 상권 집중 프로모션이 효과를 보이고 있습니다.
-                            </p>
-                        </div>
-
-                        <div className="p-7 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md space-y-4 hover:bg-white/10 transition-colors cursor-pointer group/card">
-                            <div className="flex items-center gap-3">
-                                <div className="w-2.5 h-2.5 bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
-                                <p className="text-[11px] font-black text-orange-400 uppercase tracking-widest">Inventory Pre-Alert</p>
-                            </div>
-                            <p className="text-sm font-medium text-gray-300 leading-relaxed font-sans">
-                                '초당옥수수 1인빙수'의 수요 예측값이 상향되었습니다. 강남 및 홍대 지점의 재고 보충 주기를 2시간 단축할 것을 권장합니다.
-                            </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-10 z-10 mt-auto">
-                    <button className="w-full py-5 bg-white text-[#0B0F1A] rounded-3xl text-[12px] font-black uppercase tracking-widest hover:bg-blue-50 transition-all active:scale-95 shadow-[0_20px_40px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3 group/btn">
-                        통합 경영 전략 리포트 생성
-                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                {/* Chat Message Area (Scrollable) */}
+                <div className="flex-1 overflow-y-auto pr-2 space-y-6 custom-scrollbar mb-6 relative z-10">
+                    <div className="p-7 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md space-y-4 hover:bg-white/10 transition-colors cursor-pointer group/card opacity-100 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                        <div className="flex items-center gap-3">
+                            <div className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                            <p className="text-[11px] font-black text-green-400 uppercase tracking-widest">Growth Opportunity</p>
+                        </div>
+                        <p className="text-sm font-medium text-gray-300 leading-relaxed font-sans">
+                            점심 시간대 <span className="text-blue-400 font-black underline underline-offset-4 font-sans">'NEW 아메리카노'</span> 판매 비중이 평소보다 12% 높게 유지되고 있습니다. 오피스 상권 집중 프로모션이 효과를 보이고 있습니다.
+                        </p>
+                    </div>
+
+                    <div className="p-7 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md space-y-4 hover:bg-white/10 transition-colors cursor-pointer group/card opacity-100 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-150">
+                        <div className="flex items-center gap-3">
+                            <div className="w-2.5 h-2.5 bg-orange-500 rounded-full shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
+                            <p className="text-[11px] font-black text-orange-400 uppercase tracking-widest">Inventory Pre-Alert</p>
+                        </div>
+                        <p className="text-sm font-medium text-gray-300 leading-relaxed font-sans">
+                            '초당옥수수 1인빙수'의 수요 예측값이 상향되었습니다. 강남 및 홍대 지점의 재고 보충 주기를 2시간 단축할 것을 권장합니다.
+                        </p>
+                    </div>
+
+                    <div className="p-6 bg-blue-500/10 border border-blue-500/20 rounded-[1.5rem] border-dashed text-center group/empty transition-all hover:bg-blue-500/20">
+                        <p className="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em]">추가 분석을 위해 질문을 입력하세요</p>
+                    </div>
+                </div>
+
+                {/* Input Area */}
+                <div className="relative z-10 pt-4 border-t border-white/5">
+                    <div className="relative">
+                        <input 
+                            type="text" 
+                            placeholder="AI에게 전략 질문하기 (예: 금일 매출 하락 원인은?)"
+                            className="w-full bg-white/5 border border-white/10 rounded-[2rem] px-8 py-5 pr-20 text-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all placeholder:text-gray-600 font-medium"
+                        />
+                        <button className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-white text-[#0B0F1A] rounded-2xl hover:bg-blue-50 transition-all active:scale-95 shadow-xl group/btn">
+                            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </div>
+                    
+                    <button className="w-full mt-6 py-4 bg-transparent border border-white/10 hover:border-white/20 hover:bg-white/5 text-gray-400 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                         경영 전략 리포트 정식 생성하기
                     </button>
                 </div>
             </div>
