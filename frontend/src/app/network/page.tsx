@@ -81,39 +81,35 @@ export default function NetworkPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="space-y-1">
-                <div className="flex items-center gap-2 text-[#003B6D] font-black text-xs tracking-[0.2em] uppercase">
+                <div className="flex items-center gap-2 text-[#003B6D] font-black text-[9px] tracking-[0.2em] uppercase opacity-70">
                     <div className="w-8 h-[2px] bg-[#003B6D]" />
                     EDIYA NETWORK Intelligence
                 </div>
-                <h1 className="text-4xl font-black text-gray-900 tracking-tight">인프라 운영 인사이트</h1>
+                <h1 className="text-3xl font-black text-gray-900 tracking-tight">인프라 운영 인사이트</h1>
             </div>
-            <div className="flex items-center gap-2 text-sm font-bold text-gray-500 bg-white/50 px-5 py-2.5 rounded-[1.5rem] border border-white/40 shadow-sm backdrop-blur-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                시스템 상태: {data.metrics.systemHealth === '건강(정상)' ? '최적화' : '주의'}
+            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 bg-white/50 px-4 py-1.5 rounded-xl border border-white/40 shadow-sm backdrop-blur-sm">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                시스템 상태: <span className="text-green-600 ml-1">{data.metrics.systemHealth === '건강(정상)' ? '최적화' : '주의'}</span>
             </div>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* KPI Cards - 2x2 High Density Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { label: '시스템 헬스', value: data.metrics.systemHealth, unit: '', icon: ShieldCheck, color: data.metrics.systemHealth === '위험' ? 'red' : 'green' },
-            { label: '평균 응답 지연', value: data.metrics.avgLatencyMs, unit: 'ms', icon: Server, color: 'blue' },
-            { label: '연동 에러율 (1h)', value: data.metrics.errorRatePct, unit: '', icon: AlertTriangle, color: 'orange' },
-            { label: '운영 연계 API', value: data.metrics.totalApis, unit: 'EA', icon: Settings, color: 'indigo' }
+            { label: '시스템 헬스', value: data.metrics.systemHealth, unit: '', color: data.metrics.systemHealth === '위험' ? 'text-red-600' : 'text-green-600', bg: data.metrics.systemHealth === '위험' ? 'bg-red-50/50' : 'bg-green-50/50' },
+            { label: '평균 응답 지연', value: data.metrics.avgLatencyMs, unit: 'ms', color: 'text-blue-600', bg: 'bg-blue-50/50' },
+            { label: '연동 에러율 (1h)', value: data.metrics.errorRatePct, unit: '', color: 'text-orange-600', bg: 'bg-orange-50/50' },
+            { label: '운영 연계 API', value: data.metrics.totalApis, unit: 'EA', color: 'text-indigo-600', bg: 'bg-indigo-50/50' }
           ].map((kpi, idx) => (
-            <div key={idx} className="group relative border border-white/40 bg-white/60 backdrop-blur-md shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-[2rem] p-7 flex items-center justify-between overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-current to-transparent opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: kpi.color === 'red' ? '#ef4444' : (kpi.color === 'green' ? '#22c55e' : '#003B6D') }} />
-              <div className="z-10">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{kpi.label}</p>
-                <h3 className={`text-4xl font-black tracking-tight ${kpi.color === 'red' ? 'text-red-600' : (kpi.color === 'green' ? 'text-green-600' : 'text-gray-800')}`}>
-                    {kpi.value}<span className="text-lg ml-1 font-bold opacity-60">{kpi.unit}</span>
-                </h3>
-              </div>
-              <div className={`p-4 rounded-2xl shadow-inner ring-1 transition-all duration-500 group-hover:scale-110 ${
-                kpi.color === 'red' ? 'bg-red-50 ring-red-100 text-red-500' : 
-                kpi.color === 'green' ? 'bg-green-50 ring-green-100 text-green-500' : 'bg-blue-50 ring-blue-100 text-[#003B6D]'
-              }`}>
-                <kpi.icon className="w-7 h-7" />
+            <div key={idx} className={`group relative border border-white/40 ${kpi.bg} backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 flex flex-col justify-center overflow-hidden h-24`}>
+              <div className="flex justify-between items-center z-10">
+                <div className="space-y-0.5">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{kpi.label}</p>
+                  <h3 className={`text-2xl font-black tracking-tighter truncate ${kpi.color}`}>
+                      {kpi.value}
+                      {kpi.unit && <span className="text-sm ml-0.5 font-bold opacity-50">{kpi.unit}</span>}
+                  </h3>
+                </div>
               </div>
             </div>
           ))}

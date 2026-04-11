@@ -1,10 +1,11 @@
-import React from 'react';
-import { Search, Menu, TrendingUp, Truck, Network, Bell } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Menu, TrendingUp, Truck, Network, Bell, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-  export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const isSales = pathname === '/';
   const isLogistics = pathname?.startsWith('/logistics');
@@ -18,16 +19,23 @@ import { usePathname } from 'next/navigation';
         style={{ backgroundImage: `url('/images/dashboard_bg.png')` }}
       />
       <div className="absolute inset-0 bg-gradient-to-br from-[#001D3D]/80 via-transparent to-black/20 pointer-events-none" />
-      {/* Sidebar with Glassmorphism */}
-      <aside className="w-64 bg-white/90 backdrop-blur-xl border-r border-white/50 flex flex-col shadow-[4px_0_24px_-10px_rgba(0,0,0,0.05)] justify-between shrink-0 z-20">
-        <div>
-          <div className="p-6 mb-4 h-20 flex items-center bg-gradient-to-br from-white/60 to-transparent border-b border-gray-100">
+      
+      {/* Sidebar with Sliding Animation */}
+      <aside className={`fixed inset-y-0 left-0 z-30 transform ${isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0'} bg-white/90 backdrop-blur-xl border-r border-white/50 flex flex-col shadow-[4px_0_24px_-10px_rgba(0,0,0,0.05)] justify-between transition-all duration-300 ease-in-out`}>
+        <div className={isSidebarOpen ? 'opacity-100 transition-opacity delay-100' : 'opacity-0 pointer-events-none'}>
+          <div className="p-6 mb-4 h-20 flex items-center justify-between bg-gradient-to-br from-white/60 to-transparent border-b border-gray-100">
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-br from-[#003B6D] to-[#001D3D] text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-2xl shadow-md tracking-wider">
+              <div className="bg-gradient-to-br from-[#003B6D] to-[#001D3D] text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xl shadow-md tracking-wider">
                 E
               </div>
-              <span className="font-bold text-xl tracking-tight text-[#002C5F]">이디야 AX</span>
+              <span className="font-bold text-lg tracking-tight text-[#002C5F]">이디야 AX</span>
             </div>
+            <button 
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
           
           <nav className="px-4 space-y-2 mt-4">
@@ -61,15 +69,23 @@ import { usePathname } from 'next/navigation';
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-[#F4F7FC]">
+      {/* Main Content Area - Transitions margin when sidebar slides */}
+      <main className={`flex-1 flex flex-col min-w-0 bg-[#F4F7FC] transition-all duration-300 ${isSidebarOpen ? 'pl-64' : 'pl-0'}`}>
         {/* Top Header */}
-        <header className="h-20 bg-white/70 backdrop-blur-lg border-b border-white flex items-center justify-between px-8 z-10 shrink-0 sticky top-0 shadow-[0_4px_24px_-10px_rgba(0,0,0,0.03)]">
+        <header className="h-16 bg-white/70 backdrop-blur-lg border-b border-white flex items-center justify-between px-6 z-20 shrink-0 sticky top-0 shadow-[0_4px_24px_-10px_rgba(0,0,0,0.03)]">
           <div className="flex items-center text-gray-800">
-            <button className="mr-4 lg:hidden hover:bg-gray-100 p-2 rounded-lg transition-colors">
-              <Menu className="w-6 h-6 text-gray-500" />
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="mr-4 hover:bg-gray-100 p-2 rounded-lg transition-colors group"
+            >
+              <Menu className={`w-6 h-6 text-gray-500 group-hover:text-[#003B6D] transition-transform ${isSidebarOpen ? 'rotate-90' : 'rotate-0'}`} />
             </button>
-            <h1 className="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-500 drop-shadow-sm">AX Decision Platform</h1>
+            <div className={`flex items-center gap-2 transition-all duration-300 ${isSidebarOpen ? 'opacity-0 -translate-x-4 pointer-events-none w-0 overflow-hidden' : 'opacity-100 translate-x-0 w-auto'}`}>
+              <div className="bg-[#003B6D] text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold shadow-sm">E</div>
+              <span className="font-bold text-base tracking-tight text-[#002C5F]">이디야 AX</span>
+            </div>
+            {!isSidebarOpen && <div className="w-[1px] h-6 bg-gray-200 mx-4" />}
+            <h1 className="text-lg font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-500 drop-shadow-sm">AX Decision Platform</h1>
           </div>
           
           <div className="flex items-center space-x-5">

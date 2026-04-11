@@ -63,10 +63,10 @@ export default function Dashboard() {
   }
 
   const kpiData = [
-    { label: '누적 총 매출액', value: formatKoreanCurrency(data.metrics.totalSales), icon: TrendingUp, trend: '+12.5%', isUp: true },
-    { label: '전체 주문 건수', value: data.metrics.totalOrders.toLocaleString(), unit: '건', icon: ShoppingBag, trend: '+5.2%', isUp: true },
-    { label: '평균 객단가 (AOV)', value: formatKoreanCurrency(data.metrics.averageOrderValue), icon: Users, trend: '-1.2%', isUp: false },
-    { label: '최고 인기 품목', value: data.metrics.bestSeller, icon: Star, trend: 'BEST', isUp: true }
+    { label: '누적 총 매출액', value: formatKoreanCurrency(data.metrics.totalSales), trend: '+12.5%', isUp: true, color: 'text-blue-600', bg: 'bg-blue-50/50' },
+    { label: '평균 객단가 (AOV)', value: formatKoreanCurrency(data.metrics.averageOrderValue), trend: '-1.2%', isUp: false, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
+    { label: '전체 주문 건수', value: data.metrics.totalOrders.toLocaleString(), unit: '건', trend: '+5.2%', isUp: true, color: 'text-emerald-600', bg: 'bg-emerald-50/50' },
+    { label: '최고 인기 품목 (TOP 3)', value: `${data.metrics.bestSeller}, 아메리카노, 카페라떼`, trend: 'BEST', isUp: true, color: 'text-amber-600', bg: 'bg-amber-50/50' }
   ];
 
   const chartFilters = [
@@ -80,44 +80,37 @@ export default function Dashboard() {
       <div className="w-full space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-1000">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-1">
-            <div className="space-y-2">
-                <div className="flex items-center gap-3 text-[#003B6D] font-black text-[10px] tracking-[0.3em] uppercase opacity-80">
-                    <div className="w-12 h-[3px] bg-gradient-to-r from-[#003B6D] to-blue-400 rounded-full" />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-1">
+            <div className="space-y-1">
+                <div className="flex items-center gap-3 text-[#003B6D] font-black text-[9px] tracking-[0.3em] uppercase opacity-70">
+                    <div className="w-10 h-[2px] bg-[#003B6D] rounded-full" />
                     EDIYA AX Sales Intelligence
                 </div>
-                <h1 className="text-5xl font-black text-gray-900 tracking-tighter">실시간 매출 인사이트</h1>
+                <h1 className="text-3xl font-black text-gray-900 tracking-tighter">실시간 매출 인사이트</h1>
             </div>
             <div className="flex items-center gap-3">
-                <div className="px-5 py-2.5 bg-white/50 border border-white/40 rounded-2xl shadow-sm backdrop-blur-md flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                    <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Live Engine Connected</span>
+                <div className="px-4 py-1.5 bg-white/50 border border-white/40 rounded-xl shadow-sm backdrop-blur-md flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Live Engine Connected</span>
                 </div>
             </div>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* KPI Cards - 2x2 High Density Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {kpiData.map((kpi, idx) => (
-            <div key={idx} className="group relative border border-white/40 bg-white/60 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.03)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.08)] transition-all duration-700 rounded-[2.5rem] p-8 flex flex-col justify-between overflow-hidden">
-              <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-[#003B6D]/5 rounded-full blur-3xl group-hover:bg-[#003B6D]/10 transition-all duration-700" />
-              
-              <div className="flex justify-between items-start z-10">
-                <div className="p-4 bg-[#003B6D] text-white rounded-2xl shadow-xl shadow-blue-900/10 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500">
-                  <kpi.icon className="w-6 h-6" />
+            <div key={idx} className={`group relative border border-white/40 ${kpi.bg} backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 flex flex-col justify-center overflow-hidden h-24`}>
+              <div className="flex justify-between items-center z-10">
+                <div className="space-y-0.5">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{kpi.label}</p>
+                  <h3 className={`font-black tracking-tighter truncate ${kpi.color} ${kpi.label.includes('매출액') || kpi.label.includes('TOP 3') ? 'text-xl' : 'text-2xl'}`}>
+                      {kpi.value}
+                      {kpi.unit && <span className="text-sm ml-0.5 font-bold opacity-50">{kpi.unit}</span>}
+                  </h3>
                 </div>
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black tracking-tighter ${kpi.isUp ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}>
-                    {kpi.isUp ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black tracking-tighter ${kpi.isUp ? 'text-green-600 bg-green-100/50' : 'text-red-600 bg-red-100/50'}`}>
                     {kpi.trend}
                 </div>
-              </div>
-
-              <div className="mt-8 z-10">
-                <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.15em] mb-2 group-hover:text-[#003B6D] transition-colors">{kpi.label}</p>
-                <h3 className="text-3xl font-black text-gray-900 tracking-tight leading-none">
-                    {kpi.value}
-                    {kpi.unit && <span className="text-lg ml-1 font-bold opacity-40">{kpi.unit}</span>}
-                </h3>
               </div>
             </div>
           ))}
