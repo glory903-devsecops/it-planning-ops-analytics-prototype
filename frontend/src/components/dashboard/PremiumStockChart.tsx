@@ -192,7 +192,7 @@ export function PremiumStockChart({
                         stroke="#003B6D" 
                         strokeWidth={4}
                         dot={{ r: 4, fill: '#003B6D', strokeWidth: 2, stroke: '#fff' }}
-                        activeDot={{ r: 8, fill: '#003B6D', stroke: '#fff', strokeWidth: 4, shadow: '0 0 20px rgba(0,59,109,0.3)' }}
+                        activeDot={{ r: 8, fill: '#003B6D', stroke: '#fff', strokeWidth: 4 }}
                         animationDuration={1500}
                     />
                     </LineChart>
