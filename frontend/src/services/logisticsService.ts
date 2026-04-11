@@ -1,4 +1,4 @@
-import { io, Socket } from 'socket.io-client';
+import { mockLogisticsOrders } from '../data/mock/logisticsOrders';
 
 export class LogisticsService {
   public socket: Socket | null = null;
@@ -14,19 +14,15 @@ export class LogisticsService {
       this.latestData = await res.json();
       return this.latestData;
     } catch (e) {
-      console.warn("Logistics backend not reachable, using Static Showcase Data");
+      console.warn("Logistics backend not reachable, using Static Showcase Data (3,200 records)");
       this.latestData = {
         metrics: {
-          totalStockLevel: 82,
-          activeAlerts: 3,
-          pendingOrders: 14,
-          avgLeadTime: '2.4h'
+          totalStores: 9,
+          criticalStores: 2,
+          avgStockLevel: 82,
+          pendingOrders: 14
         },
-        inventory: [
-          { item: '원두', stock: 45, status: '충분' },
-          { item: '우유', stock: 12, status: '주의' },
-          { item: '종이컵', stock: 88, status: '충분' }
-        ],
+        recentOrders: mockLogisticsOrders,
         timeSeriesData: Array.from({ length: 12 }, (_, i) => ({
           time: `${(i + 8).toString().padStart(2, '0')}:00`,
           '강남본점': 70 + Math.random() * 20,

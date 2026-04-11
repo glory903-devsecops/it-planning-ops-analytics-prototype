@@ -55,71 +55,68 @@ function getSimulatedTimestamp(hour, minute) {
 }
 
 const data = [];
+const NUM_DAYS = 30; // Generate 30 days of history to reach ~30k rows
 
-// Base Generation loop per hour
-for (let h = 8; h <= 22; h++) {
-  // Volume calculation for this hour
-  let eventVolumeForHour = Math.floor(Math.random() * 30) + 20; 
-  
-  // Create variations based on hour
-  for (let i = 0; i < eventVolumeForHour; i++) {
-    // 1. Pick a store
-    const store = weightedRandom(STORE_CONFIGS);
+// Base Generation loop per day
+for (let d = 0; d < NUM_DAYS; d++) {
+    const dateOffset = (NUM_DAYS - 1) - d;
+    const baseDate = new Date();
+    baseDate.setDate(baseDate.getDate() - dateOffset);
     
-    // 2. Determine time adjustments based on store type
-    let hourProbability = 1.0;
-    if (store.type === 'office') {
-      if (h === 8 || h === 9 || h === 12 || h === 13) hourProbability = 2.5; // Morning & Lunch peaks
-      else if (h >= 18) hourProbability = 0.4; // Drops fast after work
-    } else if (store.type === 'university') {
-      if (h >= 14 && h <= 19) hourProbability = 2.0; // Afternoon & Evening hits
-      if (h <= 10) hourProbability = 0.5; // Slow mornings
-    } else {
-      // normal
-      if (h >= 12 && h <= 14) hourProbability = 1.5;
+    // Day of week multiplier (Weekends busier for university/normal, slower for office)
+    const isWeekend = baseDate.getDay() === 0 || baseDate.getDay() === 6;
+
+    for (let h = 8; h <= 22; h++) {
+        // Double the density to reach over 30,000 consistently
+        let eventVolumeForHour = Math.floor(Math.random() * 100) + 100;        if (isWeekend) eventVolumeForHour *= 1.2;
+
+        for (let i = 0; i < eventVolumeForHour; i++) {
+            const store = weightedRandom(STORE_CONFIGS);
+            
+            let hourProbability = 1.0;
+            if (store.type === 'office') {
+                if (isWeekend) hourProbability = 0.3; // Very quiet on weekends
+                else if (h === 8 || h === 9 || h === 12 || h === 13) hourProbability = 2.5;
+                else if (h >= 18) hourProbability = 0.4;
+            } else if (store.type === 'university') {
+                if (h >= 14 && h <= 19) hourProbability = 2.0;
+                if (h <= 10) hourProbability = 0.5;
+            } else {
+                if (h >= 12 && h <= 14) hourProbability = 1.5;
+            }
+
+            if (Math.random() > (hourProbability / 2.5) * store.weight) continue;
+
+            let menuWeights = MENU_CONFIGS.map(m => ({...m}));
+            const menu = weightedRandom(menuWeights);
+
+            let qty = 1;
+            if (Math.random() > 0.8) qty = 2;
+            if (Math.random() > 0.95) qty = 3;
+
+            const channel = weightedRandom(CHANNELS).name;
+            const isError = Math.random() < 0.03 * hourProbability;
+
+            // Generate timestamp for specific day
+            const timestamp = new Date(baseDate);
+            timestamp.setHours(h, Math.floor(Math.random() * 60), Math.floor(Math.random() * 60));
+            const tsStr = timestamp.toISOString().replace('T', ' ').substring(0, 19);
+
+            data.push({
+                timestamp: tsStr,
+                store_name: store.name,
+                store_category: store.type,
+                menu_name: menu.name,
+                menu_category: menu.category,
+                channel: channel,
+                qty: qty,
+                total_price: menu.price * qty,
+                status: isError ? '실패(Timeout)' : '완료',
+                payment_method: Math.random() > 0.3 ? '카드결제' : '간편결제',
+                order_id: `ORD-${timestamp.getTime().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`
+            });
+        }
     }
-
-    // Skip some iterations to simulate lower probability
-    if (Math.random() > (hourProbability / 2.5) * store.weight) continue;
-
-    // 3. Pick a menu, adjuting for type and time
-    let menuWeights = MENU_CONFIGS.map(m => ({...m}));
-    if (store.type === 'university' && (h >= 14 && h <= 18)) {
-      // Boosting sweets in afternoon for uni students
-      menuWeights.find(m => m.type === 'sweet').weight *= 2.0;
-    }
-    if (h >= 14 && h <= 16) {
-      // Season spikes boost randomly in hot afternoons
-      menuWeights.find(m => m.type === 'season_spike').weight *= 1.8;
-    }
-    const menu = weightedRandom(menuWeights);
-
-    // 4. Quantity usually 1, sometimes 2 or 3
-    let qty = 1;
-    if (Math.random() > 0.8) qty = 2;
-    if (Math.random() > 0.95) qty = 3;
-
-    // 5. Pick channel
-    const channel = weightedRandom(CHANNELS).name;
-
-    // 6. Simulate system failure risk
-    // Higher traffic (office peaks) -> higher timeout risk
-    const isError = Math.random() < 0.05 * hourProbability; // roughly 2~5% failure rate
-
-    data.push({
-      timestamp: getSimulatedTimestamp(h, Math.floor(Math.random() * 60)),
-      store_name: store.name,
-      store_category: store.type,
-      menu_name: menu.name,
-      menu_category: menu.category,
-      channel: channel,
-      qty: qty,
-      total_price: menu.price * qty,
-      status: isError ? '실패(Timeout)' : '완료',
-      payment_method: Math.random() > 0.3 ? '카드결제' : '간편결제',
-      order_id: `ORD-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`
-    });
-  }
 }
 
 // Sort chronologically reverse for the dashboard

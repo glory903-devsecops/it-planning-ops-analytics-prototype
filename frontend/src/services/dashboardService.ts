@@ -1,4 +1,4 @@
-import { io, Socket } from 'socket.io-client';
+import { salesEvents } from '../data/mock/salesEvents';
 
 export class DashboardService {
   public socket: Socket | null = null;
@@ -15,13 +15,13 @@ export class DashboardService {
       this.latestData = await res.json();
       return this.latestData;
     } catch (e) {
-      console.warn("Backend not reachable, using Static Showcase Data");
+      console.warn("Backend not reachable, using Static Showcase Data (37,000+ records)");
       // High-fidelity fallback for demo site
       this.latestData = {
         metrics: {
-          totalSales: 153370600,
-          totalOrders: 1240,
-          averageOrderValue: 123680,
+          totalSales: salesEvents.reduce((acc, curr) => acc + (curr.status === '완료' ? curr.total_price : 0), 0),
+          totalOrders: salesEvents.filter(s => s.status === '완료').length,
+          averageOrderValue: Math.floor(salesEvents.reduce((acc, curr) => acc + (curr.status === '완료' ? curr.total_price : 0), 0) / salesEvents.filter(s => s.status === '완료').length),
           bestSeller: 'NEW 아메리카노'
         },
         timeSeriesData: Array.from({ length: 24 }, (_, i) => ({
@@ -29,18 +29,10 @@ export class DashboardService {
           총매출액: 5000000 + Math.random() * 8000000,
           'NEW 아메리카노': 2000000 + Math.random() * 3000000
         })),
-        availableItems: ['NEW 아메리카노', '카페라떼', '토피넛 라떼'],
-        availableStores: ['강남본점', '여의도역점', '판교역점'],
-        availableChannels: ['배달의민족', '매장 POS', '키오스크'],
-        recentSales: Array.from({ length: 10 }, (_, i) => ({
-          timestamp: new Date(Date.now() - i * 600000).toISOString().replace('T', ' ').substring(0, 19),
-          menu_name: i % 2 === 0 ? 'NEW 아메리카노' : '카페라떼',
-          store_name: '강남본점',
-          channel: '배달의민족',
-          qty: 1,
-          total_price: 3200,
-          status: '완료'
-        }))
+        availableItems: Array.from(new Set(salesEvents.map(s => s.menu_name))),
+        availableStores: Array.from(new Set(salesEvents.map(s => s.store_name))),
+        availableChannels: Array.from(new Set(salesEvents.map(s => s.channel))),
+        recentSales: salesEvents
       };
       return this.latestData;
     }

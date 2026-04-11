@@ -20,6 +20,20 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
   const [exportDay, setExportDay] = useState('');
   const [exportStore, setExportStore] = useState('전체 지점');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
+  // Search Debouncing
+  const [displaySearchTerm, setDisplaySearchTerm] = useState('');
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(displaySearchTerm);
+      setCurrentPage(1); // Reset to first page on search
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [displaySearchTerm]);
+
   const stores = useMemo(() => Array.from(new Set(incidents.map(i => i.store_name))), [incidents]);
 
   const filteredAndSortedIncidents = useMemo(() => {
@@ -53,11 +67,18 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
     return result;
   }, [incidents, searchTerm, sortConfig]);
 
+  const totalPages = Math.ceil(filteredAndSortedIncidents.length / itemsPerPage);
+  const paginatedIncidents = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedIncidents.slice(start, start + itemsPerPage);
+  }, [filteredAndSortedIncidents, currentPage]);
+
   const handleSort = (key: SortConfig['key']) => {
     setSortConfig(prev => ({
       key,
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
     }));
+    setCurrentPage(1);
   };
 
   const handleDownloadCSV = () => {
@@ -92,7 +113,7 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
                 REAL-TIME LOG
               </span>
             </CardTitle>
-            <p className="text-xs font-bold text-gray-400 tracking-wide uppercase">{filteredAndSortedIncidents.length}건의 데이터가 발견되었습니다</p>
+            <p className="text-xs font-bold text-gray-400 tracking-wide uppercase">전체 {filteredAndSortedIncidents.length.toLocaleString()}건 중 {currentPage}페이지</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -101,8 +122,8 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
               <input 
                 type="text" 
                 placeholder="품목, 지점, 매체 검색..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={displaySearchTerm}
+                onChange={(e) => setDisplaySearchTerm(e.target.value)}
                 className="pl-11 pr-6 py-3 bg-white/80 border-none rounded-2xl text-sm font-bold placeholder:text-gray-300 focus:ring-4 focus:ring-[#003B6D]/5 w-64 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] transition-all"
               />
             </div>
@@ -140,7 +161,93 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50/50">
-                {filteredAndSortedIncidents.slice(0, 10).map((incident, i) => {
+                {paginatedIncidents.map((incident, i) => {
+                  const timestampParts = (incident.timestamp || '').split(' ');
+                  const datePart = timestampParts[0] || '';
+                  const timePart = timestampParts[1] || '';
+                  const [yy, mm, dd] = datePart.split('-');
+                  const time = timePart.substring(0, 5);
+                  
+                  return (
+                    <tr key={i} className="hover:bg-white transition-all duration-300 group/row">
+                      <td className="px-8 py-6">
+                        <div className="flex flex-col">
+                          <span className="text-gray-900 font-black group-hover/row:text-[#003B6D] transition-colors">{time || '00:00'}</span>
+                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{mm && dd ? `${mm}월 ${dd}일` : '-'}</span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="text-gray-800 font-black max-w-[180px] truncate bg-gray-50 group-hover/row:bg-blue-50/50 px-3 py-1.5 rounded-xl border border-gray-100 transition-all font-sans" title={incident.menu_name || (incident as any).item_name || (incident as any).name || '알 수 없음'}>
+                          {incident.menu_name || (incident as any).item_name || (incident as any).name || '알 수 없음'}
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-2 text-gray-600 font-bold">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                            {incident.store_name || (incident as any).branch_name || (incident as any).store || '전체 지점'}
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className="inline-flex items-center px-4 py-1.5 rounded-2xl text-[10px] font-black tracking-widest uppercase bg-white border border-gray-100 shadow-sm group-hover/row:border-[#003B6D]/20 group-hover/row:text-[#003B6D] transition-all">
+                          {incident.channel || (incident as any).platform || (incident as any).source || '매장'}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-gray-400 font-bold text-center">{incident.qty || 1}</td>
+                      <td className="px-8 py-6 text-right">
+                        <div className="text-[#003B6D] font-black text-xl tracking-tight">
+                          {formatKoreanCurrency(Number(incident.total_price || (incident as any).price || (incident as any).amount || 0))}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="px-8 py-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+                <button 
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    className="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#003B6D] hover:border-[#003B6D] disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:border-gray-200 transition-all"
+                >
+                    <ChevronDown className="w-5 h-5 rotate-90" />
+                </button>
+                <div className="mx-4 flex items-center gap-2">
+                    {Array.from({length: Math.min(5, totalPages)}, (_, i) => {
+                        let pageNum = currentPage;
+                        if (currentPage <= 3) pageNum = i + 1;
+                        else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+                        else pageNum = currentPage - 2 + i;
+
+                        if (pageNum <= 0 || pageNum > totalPages) return null;
+
+                        return (
+                            <button 
+                                key={pageNum}
+                                onClick={() => setCurrentPage(pageNum)}
+                                className={`w-10 h-10 rounded-xl text-sm font-black transition-all ${currentPage === pageNum ? 'bg-[#003B6D] text-white shadow-lg shadow-blue-900/10' : 'bg-white border border-gray-200 text-gray-400 hover:border-[#003B6D] hover:text-[#003B6D]'}`}
+                            >
+                                {pageNum}
+                            </button>
+                        );
+                    })}
+                </div>
+                <button 
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    className="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#003B6D] hover:border-[#003B6D] disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:border-gray-200 transition-all"
+                >
+                    <ChevronDown className="w-5 h-5 -rotate-90" />
+                </button>
+            </div>
+            <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
+                Showing {Math.min(filteredAndSortedIncidents.length, (currentPage-1)*itemsPerPage + 1)}-{Math.min(filteredAndSortedIncidents.length, currentPage*itemsPerPage)} of {filteredAndSortedIncidents.length.toLocaleString()}
+            </div>
+          </div>
+        </CardContent>
                   const timestampParts = (incident.timestamp || '').split(' ');
                   const datePart = timestampParts[0] || '';
                   const timePart = timestampParts[1] || '';
