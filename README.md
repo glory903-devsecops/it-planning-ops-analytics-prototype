@@ -47,13 +47,26 @@
 
 ---
 
-## 🏛️ Enterprise Architecture
+---
 
-수백만 건의 데이터를 지연 없이 처리하기 위한 최첨단 기술 아키텍처가 적용되었습니다.
+## 🏛️ Enterprise Architecture & Data Scalability
 
-- **CQRS & Cache Layer:** Command와 Query의 책임을 분리하여 대용량 트랜잭션 시에도 10ms 이하의 조회 응답성 보장.
-- **Real-time Engine:** Socket.io 및 Redis Pub/Sub을 활용한 끊김 없는 실시간 데이터 스트리밍.
-- **Robust Simulation:** 30,000개 이상의 가상 데이터를 원자적으로 생성하여 실제와 유사한 운영 환경 구현.
+수백만 건의 비즈니스 트래픽을 지연 없이 처리하고, 실제 공장 및 ERP 시스템과의 연동을 염두에 둔 고성능 아키텍처가 적용되었습니다.
+
+- **Big Data Simulation:** 30,000건(Sales) 및 3,000건(Logistics)의 원자적 트랜잭션을 생성하여 리드타임 없는 고속 조회 및 CSV 추출 기능 구현.
+- **HQ Economics Logic:** 물류 인사이트에는 본사 입장의 **구매 원가(Purchase Cost)** 및 **유통 차익(Margin)** 로직이 내장되어 단순 재고 관리를 넘어 실제 수익성 시뮬레이션이 가능합니다.
+- **Micro-batch Sync:** Socket.io 서버가 0.5초 단위로 데이터를 패치하여 프론트엔드 차트와 테이블에 끊김 없는 실시간성을 부여합니다.
+
+---
+
+## 🔗 Technical API Integration Methodology
+
+본 플랫폼은 상용 ERP(SAP, Oracle) 및 POS 데이터 파이프라인과의 연동을 고려하여 설계되었습니다. 실제 도입 시 다음과 같은 단계로 연동을 제안합니다.
+
+1. **Edge Gateway Layer:** 전국 매장 POS 및 물류 센터 센서에서 발생하는 원천 데이터를 MQTT/Kafka를 통해 실시간 수집.
+2. **Data Orchestration (ETL):** 수집된 Raw 데이터를 비즈니스 로직(유통 차익 계산, 수요 예측 모델)에 맞게 가공하여 Redis 캐시 레이어에 동기화.
+3. **AI Reasoning Flow:** 가공된 데이터를 바탕으로 LLM(Decision-Core)이 맥락을 분석하여 "경영 전략 보고서"를 자동 생성.
+4. **Actionable API:** 대시보드에서 승인된 AI 제안(예: 선행 배차 승인)이 실제 ERP 주문 시스템으로 Re-push되는 폐쇄형 루프(Closed-loop) 구축.
 
 ---
 

@@ -124,18 +124,19 @@ export default function Dashboard() {
         </div>
 
         {/* Main Analytics Content */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-          <div className="xl:col-span-2 space-y-10">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 items-stretch">
+          <div className="xl:col-span-2 flex flex-col">
             <PremiumStockChart 
               title="통합 매출 변동 트렌드 분석"
               data={data.timeSeriesData}
               filters={chartFilters}
               unit="₩"
+              height={580}
             />
           </div>
           
-          <div className="xl:col-span-1">
-             <div className="bg-[#0B0F1A]/95 border border-white/10 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden group h-[720px] flex flex-col justify-between backdrop-blur-2xl">
+          <div className="xl:col-span-1 flex flex-col">
+             <div className="bg-[#0B0F1A]/95 border border-white/10 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden group h-[725px] flex flex-col justify-between backdrop-blur-2xl">
                 <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px] group-hover:bg-blue-600/20 transition-all duration-1000" />
                 
                 {/* Header */}

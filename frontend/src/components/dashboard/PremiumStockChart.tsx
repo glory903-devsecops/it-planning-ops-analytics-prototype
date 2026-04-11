@@ -25,6 +25,7 @@ interface PremiumChartProps {
   dataKeyPrefix?: string; // e.g., for logistics "Store - Item"
   unit?: string; // e.g., "₩", "%", "ms"
   valueFormatter?: (val: number) => string;
+  height?: number;
 }
 
 export function PremiumStockChart({
@@ -32,7 +33,8 @@ export function PremiumStockChart({
   data,
   filters,
   unit = '',
-  valueFormatter
+  valueFormatter,
+  height = 400
 }: PremiumChartProps) {
   // Use a map to handle multiple dynamic filter states
   const [filterStates, setFilterStates] = useState<Record<string, string>>(() => {
@@ -138,7 +140,7 @@ export function PremiumStockChart({
         </CardHeader>
         
         <CardContent className="p-8">
-          <div className="min-h-[400px] w-full flex items-center justify-center">
+          <div style={{ height: `${height}px` }} className="w-full flex items-center justify-center">
             {processedData.length === 0 ? (
                 <div className="flex flex-col items-center gap-4 opacity-30">
                     <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-500 rounded-full animate-spin" />
