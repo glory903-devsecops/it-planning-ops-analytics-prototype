@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { Server, Activity, ArrowDownCircle, Settings, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Activity, ArrowDownCircle, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { networkService } from '../../services/networkService';
 import { PremiumStockChart } from '../../components/dashboard/PremiumStockChart';
 

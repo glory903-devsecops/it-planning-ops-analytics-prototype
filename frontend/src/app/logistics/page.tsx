@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { Package, AlertOctagon, TrendingDown, Clock, X, ChevronRight } from 'lucide-react';
+import { Clock, ChevronRight } from 'lucide-react';
 import { logisticsService } from '../../services/logisticsService';
+import { formatKoreanCurrency } from '../../lib/formatters';
 import { PremiumStockChart } from '../../components/dashboard/PremiumStockChart';
 
 export default function LogisticsPage() {
@@ -100,29 +101,54 @@ export default function LogisticsPage() {
             </div>
         </div>
 
-        {/* KPI Cards - 2x2 High Density Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* KPI Row 1: 핵심 지표 3개 (가로 3단) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             { label: '총 관리 매장', value: data.metrics.totalStores, unit: '개', trend: 'HQ Verified', isUp: true, color: 'text-[#003B6D]', bg: 'bg-blue-50/50' },
             { label: '재고 위험 매장', value: data.metrics.criticalStores, unit: '건', trend: 'ACTION REQ', isUp: false, color: 'text-red-600', bg: 'bg-red-50/50' },
             { label: '전국 평균 잔여량', value: data.metrics.avgStockLevel, unit: '', trend: '-2.1%', isUp: false, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
-            { label: 'AI 자동 발주 건수', value: data.metrics.pendingOrders, unit: '건', trend: 'Processing', isUp: true, color: 'text-emerald-600', bg: 'bg-emerald-50/50' }
           ].map((kpi, idx) => (
-            <div key={idx} className={`group relative border border-white/40 ${kpi.bg} backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 flex flex-col justify-center overflow-hidden h-24`}>
+            <div key={idx} className={`group relative border border-white/40 ${kpi.bg} backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 flex flex-col justify-center overflow-hidden h-[88px]`}>
               <div className="flex justify-between items-center z-10">
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 min-w-0">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{kpi.label}</p>
                   <h3 className={`text-2xl font-black tracking-tighter truncate ${kpi.color}`}>
                       {kpi.value}
                       {kpi.unit && <span className="text-sm ml-0.5 font-bold opacity-50">{kpi.unit}</span>}
                   </h3>
                 </div>
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black tracking-tighter ${kpi.isUp ? 'text-blue-600 bg-blue-100/50' : 'text-red-600 bg-red-100/50'}`}>
+                <div className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black tracking-tighter ${kpi.isUp ? 'text-blue-600 bg-blue-100/50' : 'text-red-600 bg-red-100/50'}`}>
                     {kpi.trend}
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* KPI Row 2: AI 자동 발주 현황 (와이드 카드) */}
+        <div className="border border-white/40 bg-emerald-50/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 overflow-hidden">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">AI 자동 발주 현황</p>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-sm">
+                  <span className="text-emerald-200 text-[10px]">대기</span>
+                  <span>{data.metrics.pendingOrders}건</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-500 text-white shadow-sm">
+                  <span className="text-blue-200 text-[10px]">처리중</span>
+                  <span>{Math.floor(data.metrics.pendingOrders * 0.3)}건</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-500 text-white shadow-sm">
+                  <span className="text-indigo-200 text-[10px]">완료</span>
+                  <span>{Math.floor(data.metrics.pendingOrders * 1.5)}건</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black tracking-tighter text-emerald-600 bg-emerald-100/50">
+                Processing
+            </div>
+          </div>
         </div>
 
         {/* Main Analytics Content */}

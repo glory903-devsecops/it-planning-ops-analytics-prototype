@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import { RecentIncidents } from '../components/dashboard/RecentIncidents';
 import { dashboardService } from '../services/dashboardService';
-import { TrendingUp, ShoppingBag, Users, Star, ArrowUpRight, ArrowDownRight, Activity, ChevronRight, Clock } from 'lucide-react';
+import { Activity, ChevronRight } from 'lucide-react';
 import { formatKoreanCurrency } from '../lib/formatters';
 import { PremiumStockChart } from '../components/dashboard/PremiumStockChart';
 
@@ -62,11 +62,18 @@ export default function Dashboard() {
     );
   }
 
-  const kpiData = [
+  const topKpiData = [
     { label: '누적 총 매출액', value: formatKoreanCurrency(data.metrics.totalSales), trend: '+12.5%', isUp: true, color: 'text-blue-600', bg: 'bg-blue-50/50' },
-    { label: '평균 객단가 (AOV)', value: formatKoreanCurrency(data.metrics.averageOrderValue), trend: '-1.2%', isUp: false, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
     { label: '전체 주문 건수', value: data.metrics.totalOrders.toLocaleString(), unit: '건', trend: '+5.2%', isUp: true, color: 'text-emerald-600', bg: 'bg-emerald-50/50' },
-    { label: '최고 인기 품목 (TOP 3)', value: `${data.metrics.bestSeller}, 아메리카노, 카페라떼`, trend: 'BEST', isUp: true, color: 'text-amber-600', bg: 'bg-amber-50/50' }
+    { label: '평균 객단가 (AOV)', value: formatKoreanCurrency(data.metrics.averageOrderValue), trend: '-1.2%', isUp: false, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
+  ];
+
+  const top5Products = [
+    { rank: 1, name: data.metrics.bestSeller || 'NEW 아메리카노', color: 'bg-amber-500 text-white' },
+    { rank: 2, name: '아메리카노', color: 'bg-blue-500 text-white' },
+    { rank: 3, name: '카페라떼', color: 'bg-indigo-500 text-white' },
+    { rank: 4, name: '초당옥수수 1인빙수', color: 'bg-emerald-500 text-white' },
+    { rank: 5, name: '자몽 하이볼 에이드', color: 'bg-rose-500 text-white' },
   ];
 
   const chartFilters = [
@@ -77,7 +84,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="w-full space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+      <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-1000">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-1">
@@ -96,24 +103,44 @@ export default function Dashboard() {
             </div>
         </div>
 
-        {/* KPI Cards - 2x2 High Density Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {kpiData.map((kpi, idx) => (
-            <div key={idx} className={`group relative border border-white/40 ${kpi.bg} backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 flex flex-col justify-center overflow-hidden h-24`}>
+        {/* KPI Row 1: 핵심 지표 3개 (가로 3단) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {topKpiData.map((kpi, idx) => (
+            <div key={idx} className={`group relative border border-white/40 ${kpi.bg} backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 flex flex-col justify-center overflow-hidden h-[88px]`}>
               <div className="flex justify-between items-center z-10">
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 min-w-0">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{kpi.label}</p>
-                  <h3 className={`font-black tracking-tighter truncate ${kpi.color} ${kpi.label.includes('매출액') || kpi.label.includes('TOP 3') ? 'text-xl' : 'text-2xl'}`}>
+                  <h3 className={`font-black tracking-tighter truncate ${kpi.color} ${kpi.label.includes('매출액') ? 'text-lg' : 'text-2xl'}`}>
                       {kpi.value}
                       {kpi.unit && <span className="text-sm ml-0.5 font-bold opacity-50">{kpi.unit}</span>}
                   </h3>
                 </div>
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black tracking-tighter ${kpi.isUp ? 'text-green-600 bg-green-100/50' : 'text-red-600 bg-red-100/50'}`}>
+                <div className={`flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black tracking-tighter ${kpi.isUp ? 'text-green-600 bg-green-100/50' : 'text-red-600 bg-red-100/50'}`}>
                     {kpi.trend}
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* KPI Row 2: 최근 인기 품목 Top 5 (와이드 카드) */}
+        <div className="border border-white/40 bg-amber-50/30 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-300 rounded-[1.5rem] p-5 overflow-hidden">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">최근 인기 품목 (TOP 5)</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                {top5Products.map((item) => (
+                  <div key={item.rank} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${item.color} shadow-sm transition-transform hover:scale-105`}>
+                    <span className="opacity-70 text-[10px]">#{item.rank}</span>
+                    <span>{item.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-black tracking-tighter text-amber-600 bg-amber-100/50">
+                BEST
+            </div>
+          </div>
         </div>
 
         {/* Main Analytics Content */}
