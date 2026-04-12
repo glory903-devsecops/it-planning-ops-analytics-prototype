@@ -21,11 +21,14 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
     setCurrentPage,
     totalPages,
     paginatedData,
-    totalRecords
+    totalRecords,
+    sortConfig,
+    toggleSort,
   } = usePagination<SalesEvent>({
     data: incidents,
     itemsPerPage: 15,
-    searchFields: ['menu_name', 'store_name', 'channel']
+    searchFields: ['menu_name', 'store_name', 'channel'],
+    initialSort: { key: 'timestamp', direction: 'desc' }
   });
 
   const stores = Array.from(new Set(incidents.map(i => i.store_name)));
@@ -46,29 +49,54 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
 
   const tableColumns = [
     { 
-      header: '일시', 
+      header: '연', 
+      sortable: true,
+      sortKey: 'timestamp',
+      accessor: (item: SalesEvent) => (
+        <span className="text-gray-400 font-bold">{item.timestamp.split('-')[0]}년</span>
+      )
+    },
+    { 
+      header: '월', 
+      sortable: true,
+      sortKey: 'timestamp',
       accessor: (item: SalesEvent) => {
-        const parts = item.timestamp.split(' ');
-        const timePiece = parts[1]?.substring(0, 5) || '00:00';
-        const datePiece = parts[0]?.split('-').slice(1).join('월 ') + '일';
-        return (
-          <div className="flex flex-col">
-            <span className="text-gray-900 font-black group-hover/row:text-[#003B6D] transition-colors">{timePiece}</span>
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{datePiece}</span>
-          </div>
-        );
+        const month = item.timestamp.split('-')[1];
+        return <span className="text-gray-700 font-black">{month}월</span>;
+      }
+    },
+    { 
+      header: '일', 
+      sortable: true,
+      sortKey: 'timestamp',
+      accessor: (item: SalesEvent) => {
+        const day = item.timestamp.split(' ')[0].split('-')[2];
+        return <span className="text-gray-700 font-black">{day}일</span>;
+      }
+    },
+    { 
+      header: '시간', 
+      sortable: true,
+      sortKey: 'timestamp',
+      accessor: (item: SalesEvent) => {
+        const time = item.timestamp.split(' ')[1]?.substring(0, 5) || '00:00';
+        return <span className="text-[#003B6D] font-black">{time}</span>;
       }
     },
     { 
       header: '품목명', 
+      sortable: true,
+      sortKey: 'menu_name',
       accessor: (item: SalesEvent) => (
-        <div className="text-gray-800 font-black max-w-[180px] truncate bg-gray-50 group-hover:bg-blue-50/50 px-3 py-1.5 rounded-xl border border-gray-100 transition-all font-sans">
+        <div className="text-gray-800 font-black max-w-[150px] truncate bg-gray-50 group-hover:bg-blue-50/50 px-3 py-1.5 rounded-xl border border-gray-100 transition-all font-sans">
           {item.menu_name}
         </div>
       )
     },
     { 
       header: '지점', 
+      sortable: true,
+      sortKey: 'store_name',
       accessor: (item: SalesEvent) => (
         <div className="flex items-center gap-2 text-gray-600 font-bold">
           <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
@@ -78,15 +106,25 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
     },
     { 
       header: '매체', 
+      sortable: true,
+      sortKey: 'channel',
       accessor: (item: SalesEvent) => (
         <span className="inline-flex items-center px-4 py-1.5 rounded-2xl text-[10px] font-black tracking-widest uppercase bg-white border border-gray-100 shadow-sm group-hover:border-[#003B6D]/20 group-hover:text-[#003B6D] transition-all">
           {item.channel}
         </span>
       )
     },
-    { header: '건수', accessor: 'qty' as keyof SalesEvent, className: 'text-center text-gray-400 font-bold' },
+    { 
+      header: '건수', 
+      sortable: true,
+      sortKey: 'qty',
+      accessor: 'qty' as keyof SalesEvent, 
+      className: 'text-center text-gray-400 font-bold' 
+    },
     { 
       header: '결제금액', 
+      sortable: true,
+      sortKey: 'total_price',
       className: 'text-right',
       accessor: (item: SalesEvent) => (
         <div className="text-[#003B6D] font-black text-xl tracking-tight">
@@ -113,6 +151,8 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
         totalRecords={totalRecords}
         itemsPerPage={15}
         onExportCsv={() => setIsExportModalOpen(true)}
+        sortConfig={sortConfig}
+        onSort={toggleSort}
       />
 
       {/* CSV Export Modal */}

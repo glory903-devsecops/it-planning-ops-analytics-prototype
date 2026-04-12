@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Download, ChevronLeft, ChevronRight, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface DataTableProps<T> {
   title: string;
@@ -9,6 +9,8 @@ interface DataTableProps<T> {
     header: string;
     accessor: keyof T | ((item: T) => React.ReactNode);
     className?: string;
+    sortKey?: keyof T | string;
+    sortable?: boolean;
   }[];
   searchTerm: string;
   onSearchChange: (value: string) => void;
@@ -18,6 +20,8 @@ interface DataTableProps<T> {
   totalRecords: number;
   itemsPerPage: number;
   onExportCsv?: () => void;
+  sortConfig?: { key: string; direction: 'asc' | 'desc' };
+  onSort?: (key: string) => void;
 }
 
 export function DataTable<T>({
@@ -33,6 +37,8 @@ export function DataTable<T>({
   totalRecords,
   itemsPerPage,
   onExportCsv,
+  sortConfig,
+  onSort,
 }: DataTableProps<T>) {
   return (
     <div className="border border-white/40 bg-white/70 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden p-8">
@@ -70,11 +76,31 @@ export function DataTable<T>({
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-gray-100">
-              {columns.map((col, idx) => (
-                <th key={idx} className={`px-6 py-5 text-left text-[11px] font-black text-gray-400 uppercase tracking-wider ${col.className || ''}`}>
-                  {col.header}
-                </th>
-              ))}
+              {columns.map((col, idx) => {
+                const isSortable = col.sortable && onSort && col.sortKey;
+                const isSorted = sortConfig?.key === col.sortKey;
+                
+                return (
+                  <th 
+                    key={idx} 
+                    className={`px-6 py-5 text-left text-[11px] font-black text-gray-400 uppercase tracking-wider ${col.className || ''} ${isSortable ? 'cursor-pointer hover:text-[#003B6D] transition-colors' : ''}`}
+                    onClick={() => isSortable && onSort(col.sortKey as string)}
+                  >
+                    <div className="flex items-center gap-2">
+                      {col.header}
+                      {isSortable && (
+                        <div className="flex flex-col">
+                          {isSorted ? (
+                            sortConfig.direction === 'asc' ? <ChevronUp className="w-3 h-3 text-[#003B6D]" /> : <ChevronDown className="w-3 h-3 text-[#003B6D]" />
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 opacity-30" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">

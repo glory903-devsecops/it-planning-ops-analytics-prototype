@@ -59,11 +59,14 @@ export default function LogisticsPage() {
     setCurrentPage,
     totalPages,
     paginatedData,
-    totalRecords
+    totalRecords,
+    sortConfig,
+    toggleSort
   } = usePagination<LogisticsOrder>({
     data: data?.recentOrders || [],
     itemsPerPage: 15,
-    searchFields: ['item_name', 'store_name', 'order_id']
+    searchFields: ['item_name', 'store_name', 'order_id'],
+    initialSort: { key: 'timestamp', direction: 'desc' }
   });
 
   if (loading || !data) {
@@ -86,17 +89,17 @@ export default function LogisticsPage() {
   ];
 
   const tableColumns = [
-    { header: '주문ID', accessor: 'order_id' as keyof LogisticsOrder, className: 'text-gray-500 font-black' },
-    { header: '일시', accessor: 'timestamp' as keyof LogisticsOrder, className: 'text-gray-400' },
-    { header: '지점명', accessor: 'store_name' as keyof LogisticsOrder, className: 'text-gray-800 font-black' },
-    { header: '품목명', accessor: 'item_name' as keyof LogisticsOrder, className: 'text-[#003B6D] font-bold' },
-    { header: '수량', accessor: (item: LogisticsOrder) => item.qty.toLocaleString(), className: 'text-gray-600 font-black' },
-    { header: '지점공급가', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.total_price), className: 'text-gray-900 font-black' },
-    { header: '본사구입가', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.purchase_cost), className: 'text-gray-500 font-bold' },
-    { header: '유통차익', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.distribution_margin), className: 'text-blue-600 bg-blue-50/30 px-2 py-1 rounded font-black' },
+    { header: '주문ID', accessor: 'order_id' as keyof LogisticsOrder, sortable: true, sortKey: 'order_id', className: 'text-gray-500 font-black' },
+    { header: '일시', accessor: 'timestamp' as keyof LogisticsOrder, sortable: true, sortKey: 'timestamp', className: 'text-gray-400' },
+    { header: '지점명', accessor: 'store_name' as keyof LogisticsOrder, sortable: true, sortKey: 'store_name', className: 'text-gray-800 font-black' },
+    { header: '품목명', accessor: 'item_name' as keyof LogisticsOrder, sortable: true, sortKey: 'item_name', className: 'text-[#003B6D] font-bold' },
+    { header: '수량', accessor: (item: LogisticsOrder) => item.qty.toLocaleString(), sortable: true, sortKey: 'qty', className: 'text-gray-600 font-black' },
+    { header: '지점공급가', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.total_price), sortable: true, sortKey: 'total_price', className: 'text-gray-900 font-black' },
+    { header: '본사구입가', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.purchase_cost), sortable: true, sortKey: 'purchase_cost', className: 'text-gray-500 font-bold' },
+    { header: '유통차익', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.distribution_margin), sortable: true, sortKey: 'distribution_margin', className: 'text-blue-600 bg-blue-50/30 px-2 py-1 rounded font-black' },
     { header: '상태', accessor: (item: LogisticsOrder) => (
       <span className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-full border border-green-100">{item.status}</span>
-    )}
+    ), sortable: true, sortKey: 'status'}
   ];
 
   return (
@@ -162,6 +165,8 @@ export default function LogisticsPage() {
           totalRecords={totalRecords}
           itemsPerPage={15}
           onExportCsv={() => alert('CSV Export Started...')}
+          sortConfig={sortConfig}
+          onSort={toggleSort}
         />
 
         {/* Logistics Report Modal */}
