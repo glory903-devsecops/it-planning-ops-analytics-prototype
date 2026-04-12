@@ -1,17 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
-import { SalesEvent } from '../../data/mock/salesEvents';
-import { Search, Download, ArrowUpDown, ChevronDown, Check, X, Calendar, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { SalesEvent } from '../../types/dashboard';
+import { Download, X, Calendar, MapPin } from 'lucide-react';
 import { formatKoreanCurrency } from '../../lib/formatters';
-
-interface SortConfig {
-  key: keyof SalesEvent | 'time';
-  direction: 'asc' | 'desc';
-}
+import { DataTable } from '../ui/DataTable';
+import { usePagination } from '../../hooks/usePagination';
 
 export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'time', direction: 'desc' });
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   
   // CSV Filter State
@@ -20,69 +14,23 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
   const [exportDay, setExportDay] = useState('');
   const [exportStore, setExportStore] = useState('전체 지점');
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const {
+    displaySearchTerm,
+    setDisplaySearchTerm,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    paginatedData,
+    totalRecords
+  } = usePagination<SalesEvent>({
+    data: incidents,
+    itemsPerPage: 15,
+    searchFields: ['menu_name', 'store_name', 'channel']
+  });
 
-  // Search Debouncing
-  const [displaySearchTerm, setDisplaySearchTerm] = useState('');
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchTerm(displaySearchTerm);
-      setCurrentPage(1); // Reset to first page on search
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [displaySearchTerm]);
-
-  const stores = useMemo(() => Array.from(new Set(incidents.map(i => i.store_name))), [incidents]);
-
-  const filteredAndSortedIncidents = useMemo(() => {
-    let result = [...incidents];
-    
-    // Filter
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(i => 
-        i.menu_name.toLowerCase().includes(lower) || 
-        i.store_name.toLowerCase().includes(lower) ||
-        i.channel.toLowerCase().includes(lower)
-      );
-    }
-
-    // Sort
-    result.sort((a, b) => {
-      let aVal: any = a[sortConfig.key as keyof SalesEvent];
-      let bVal: any = b[sortConfig.key as keyof SalesEvent];
-
-      if (sortConfig.key === 'time') {
-        aVal = a.timestamp;
-        bVal = b.timestamp;
-      }
-
-      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    return result;
-  }, [incidents, searchTerm, sortConfig]);
-
-  const totalPages = Math.ceil(filteredAndSortedIncidents.length / itemsPerPage);
-  const paginatedIncidents = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return filteredAndSortedIncidents.slice(start, start + itemsPerPage);
-  }, [filteredAndSortedIncidents, currentPage]);
-
-  const handleSort = (key: SortConfig['key']) => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
-    }));
-    setCurrentPage(1);
-  };
+  const stores = Array.from(new Set(incidents.map(i => i.store_name)));
 
   const handleDownloadCSV = () => {
-    // Construct the API URL with filters
     const params = new URLSearchParams({
       year: exportYear,
       month: exportMonth,
@@ -96,202 +44,76 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
     setIsExportModalOpen(false);
   };
 
+  const tableColumns = [
+    { 
+      header: '일시', 
+      accessor: (item: SalesEvent) => {
+        const parts = item.timestamp.split(' ');
+        const timePiece = parts[1]?.substring(0, 5) || '00:00';
+        const datePiece = parts[0]?.split('-').slice(1).join('월 ') + '일';
+        return (
+          <div className="flex flex-col">
+            <span className="text-gray-900 font-black group-hover/row:text-[#003B6D] transition-colors">{timePiece}</span>
+            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{datePiece}</span>
+          </div>
+        );
+      }
+    },
+    { 
+      header: '품목명', 
+      accessor: (item: SalesEvent) => (
+        <div className="text-gray-800 font-black max-w-[180px] truncate bg-gray-50 group-hover:bg-blue-50/50 px-3 py-1.5 rounded-xl border border-gray-100 transition-all font-sans">
+          {item.menu_name}
+        </div>
+      )
+    },
+    { 
+      header: '지점', 
+      accessor: (item: SalesEvent) => (
+        <div className="flex items-center gap-2 text-gray-600 font-bold">
+          <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+          {item.store_name}
+        </div>
+      )
+    },
+    { 
+      header: '매체', 
+      accessor: (item: SalesEvent) => (
+        <span className="inline-flex items-center px-4 py-1.5 rounded-2xl text-[10px] font-black tracking-widest uppercase bg-white border border-gray-100 shadow-sm group-hover:border-[#003B6D]/20 group-hover:text-[#003B6D] transition-all">
+          {item.channel}
+        </span>
+      )
+    },
+    { header: '건수', accessor: 'qty' as keyof SalesEvent, className: 'text-center text-gray-400 font-bold' },
+    { 
+      header: '결제금액', 
+      className: 'text-right',
+      accessor: (item: SalesEvent) => (
+        <div className="text-[#003B6D] font-black text-xl tracking-tight">
+          {formatKoreanCurrency(item.total_price)}
+        </div>
+      )
+    }
+  ];
+
   if (!incidents.length) return null;
 
   return (
     <div className="relative">
-      <Card className="border border-white/40 bg-white/60 backdrop-blur-md shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-3xl overflow-hidden mb-8 transition-all duration-300">
-        <CardHeader className="p-8 border-b border-gray-100/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <CardTitle className="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-3">
-              최근 결제 내역
-              <span className="text-[10px] font-black tracking-widest text-[#003B6D] bg-blue-50 px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-                </span>
-                REAL-TIME LOG
-              </span>
-            </CardTitle>
-            <p className="text-xs font-bold text-gray-400 tracking-wide uppercase">전체 {filteredAndSortedIncidents.length.toLocaleString()}건 중 {currentPage}페이지</p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-[#003B6D] transition-colors" />
-              <input 
-                type="text" 
-                placeholder="품목, 지점, 매체 검색..."
-                value={displaySearchTerm}
-                onChange={(e) => setDisplaySearchTerm(e.target.value)}
-                className="pl-11 pr-6 py-3 bg-white/80 border-none rounded-2xl text-sm font-bold placeholder:text-gray-300 focus:ring-4 focus:ring-[#003B6D]/5 w-64 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] transition-all"
-              />
-            </div>
-            <button 
-                onClick={() => setIsExportModalOpen(true)}
-                className="flex items-center gap-2 px-6 py-3 bg-[#003B6D] hover:bg-[#002d54] text-white rounded-2xl text-sm font-black transition-all shadow-lg shadow-blue-900/10 active:scale-95 group"
-            >
-              <Download className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
-              CSV 추출
-            </button>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-[10px] text-gray-400 bg-gray-50/30 uppercase tracking-[0.15em] font-black border-b border-gray-100">
-                <tr>
-                  <th className="px-8 py-5 cursor-pointer hover:text-[#003B6D] transition-colors group" onClick={() => handleSort('time')}>
-                    <div className="flex items-center gap-2">일시 <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100" /></div>
-                  </th>
-                  <th className="px-8 py-5 cursor-pointer hover:text-[#003B6D] transition-colors group" onClick={() => handleSort('menu_name')}>
-                    <div className="flex items-center gap-2">품목명 <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100" /></div>
-                  </th>
-                  <th className="px-8 py-5 cursor-pointer hover:text-[#003B6D] transition-colors group" onClick={() => handleSort('store_name')}>
-                    <div className="flex items-center gap-2">지점 <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100" /></div>
-                  </th>
-                  <th className="px-8 py-5 cursor-pointer hover:text-[#003B6D] transition-colors group" onClick={() => handleSort('channel')}>
-                    <div className="flex items-center gap-2">매체 <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100" /></div>
-                  </th>
-                  <th className="px-8 py-5 text-center">건수</th>
-                  <th className="px-8 py-5 text-right cursor-pointer hover:text-[#003B6D] transition-colors group" onClick={() => handleSort('total_price')}>
-                    <div className="flex items-center justify-end gap-2">결제금액 <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-100" /></div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50/50">
-                {paginatedIncidents.map((incident, i) => {
-                  const timestampParts = (incident.timestamp || '').split(' ');
-                  const datePart = timestampParts[0] || '';
-                  const timePart = timestampParts[1] || '';
-                  const [yy, mm, dd] = datePart.split('-');
-                  const time = timePart.substring(0, 5);
-                  
-                  return (
-                    <tr key={i} className="hover:bg-white transition-all duration-300 group/row">
-                      <td className="px-8 py-6">
-                        <div className="flex flex-col">
-                          <span className="text-gray-900 font-black group-hover/row:text-[#003B6D] transition-colors">{time || '00:00'}</span>
-                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{mm && dd ? `${mm}월 ${dd}일` : '-'}</span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="text-gray-800 font-black max-w-[180px] truncate bg-gray-50 group-hover/row:bg-blue-50/50 px-3 py-1.5 rounded-xl border border-gray-100 transition-all font-sans" title={incident.menu_name || (incident as any).item_name || (incident as any).name || '알 수 없음'}>
-                          {incident.menu_name || (incident as any).item_name || (incident as any).name || '알 수 없음'}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-2 text-gray-600 font-bold">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                            {incident.store_name || (incident as any).branch_name || (incident as any).store || '전체 지점'}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <span className="inline-flex items-center px-4 py-1.5 rounded-2xl text-[10px] font-black tracking-widest uppercase bg-white border border-gray-100 shadow-sm group-hover/row:border-[#003B6D]/20 group-hover/row:text-[#003B6D] transition-all">
-                          {incident.channel || (incident as any).platform || (incident as any).source || '매장'}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6 text-gray-400 font-bold text-center">{incident.qty || 1}</td>
-                      <td className="px-8 py-6 text-right">
-                        <div className="text-[#003B6D] font-black text-xl tracking-tight">
-                          {formatKoreanCurrency(Number(incident.total_price || (incident as any).price || (incident as any).amount || 0))}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination Controls */}
-          <div className="px-8 py-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <button 
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    className="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#003B6D] hover:border-[#003B6D] disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:border-gray-200 transition-all"
-                >
-                    <ChevronDown className="w-5 h-5 rotate-90" />
-                </button>
-                <div className="mx-4 flex items-center gap-2">
-                    {Array.from({length: Math.min(5, totalPages)}, (_, i) => {
-                        let pageNum = currentPage;
-                        if (currentPage <= 3) pageNum = i + 1;
-                        else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
-                        else pageNum = currentPage - 2 + i;
-
-                        if (pageNum <= 0 || pageNum > totalPages) return null;
-
-                        return (
-                            <button 
-                                key={pageNum}
-                                onClick={() => setCurrentPage(pageNum)}
-                                className={`w-10 h-10 rounded-xl text-sm font-black transition-all ${currentPage === pageNum ? 'bg-[#003B6D] text-white shadow-lg shadow-blue-900/10' : 'bg-white border border-gray-200 text-gray-400 hover:border-[#003B6D] hover:text-[#003B6D]'}`}
-                            >
-                                {pageNum}
-                            </button>
-                        );
-                    })}
-                </div>
-                <button 
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    className="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#003B6D] hover:border-[#003B6D] disabled:opacity-30 disabled:hover:text-gray-400 disabled:hover:border-gray-200 transition-all"
-                >
-                    <ChevronDown className="w-5 h-5 -rotate-90" />
-                </button>
-            </div>
-            <div className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                Showing {Math.min(filteredAndSortedIncidents.length, (currentPage-1)*itemsPerPage + 1)}-{Math.min(filteredAndSortedIncidents.length, currentPage*itemsPerPage)} of {filteredAndSortedIncidents.length.toLocaleString()}
-            </div>
-          </div>
-        </CardContent>
-                  const timestampParts = (incident.timestamp || '').split(' ');
-                  const datePart = timestampParts[0] || '';
-                  const timePart = timestampParts[1] || '';
-                  const [yy, mm, dd] = datePart.split('-');
-                  const time = timePart.substring(0, 5);
-                  
-                  return (
-                    <tr key={i} className="hover:bg-white transition-all duration-300 group/row">
-                      <td className="px-8 py-6">
-                        <div className="flex flex-col">
-                          <span className="text-gray-900 font-black group-hover/row:text-[#003B6D] transition-colors">{time || '00:00'}</span>
-                          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">{mm && dd ? `${mm}월 ${dd}일` : '-'}</span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="text-gray-800 font-black max-w-[180px] truncate bg-gray-50 group-hover/row:bg-blue-50/50 px-3 py-1.5 rounded-xl border border-gray-100 transition-all font-sans" title={incident.menu_name || (incident as any).item_name || (incident as any).name || '알 수 없음'}>
-                          {incident.menu_name || (incident as any).item_name || (incident as any).name || '알 수 없음'}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-2 text-gray-600 font-bold">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                            {incident.store_name || (incident as any).branch_name || (incident as any).store || '전체 지점'}
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <span className="inline-flex items-center px-4 py-1.5 rounded-2xl text-[10px] font-black tracking-widest uppercase bg-white border border-gray-100 shadow-sm group-hover/row:border-[#003B6D]/20 group-hover/row:text-[#003B6D] transition-all">
-                          {incident.channel || (incident as any).platform || (incident as any).source || '매장'}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6 text-gray-400 font-bold text-center">{incident.qty || 1}</td>
-                      <td className="px-8 py-6 text-right">
-                        <div className="text-[#003B6D] font-black text-xl tracking-tight">
-                          {formatKoreanCurrency(Number(incident.total_price || (incident as any).price || (incident as any).amount || 0))}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      <DataTable 
+        title="최근 결제 내역"
+        subtitle={`전체 ${totalRecords.toLocaleString()}건 중 ${currentPage}페이지 (REAL-TIME LOG)`}
+        data={paginatedData}
+        columns={tableColumns}
+        searchTerm={displaySearchTerm}
+        onSearchChange={setDisplaySearchTerm}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalRecords={totalRecords}
+        itemsPerPage={15}
+        onExportCsv={() => setIsExportModalOpen(true)}
+      />
 
       {/* CSV Export Modal */}
       {isExportModalOpen && (
