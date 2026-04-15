@@ -53,13 +53,20 @@ export function ExecutiveSummaryBlock({ kpis }: Props) {
               
               <div className="h-6 w-[1px] bg-white/5" />
               
-              <div className="flex flex-col">
-                <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Confidence</span>
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-white">{kpi.confidenceScore}%</span>
-                    <div className="w-12 h-1 bg-slate-800 rounded-full overflow-hidden self-center">
-                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${kpi.confidenceScore}%` }} />
-                    </div>
+              <div className="flex-1 flex flex-col gap-1.5">
+                <div className="flex justify-between items-center text-[8px] font-black uppercase tracking-widest text-slate-500">
+                    <span>Performance Target</span>
+                    <span className="text-blue-400">{kpi.confidenceScore}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden border border-white/5 shadow-inner">
+                    <div 
+                        className={`h-full rounded-full transition-all duration-1000 ${
+                            kpi.status === 'critical' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' :
+                            kpi.status === 'warning' ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]' :
+                            'bg-blue-500 shadow-[0_0_8px_rgba(56,189,248,0.4)]'
+                        }`}
+                        style={{ width: `${kpi.confidenceScore}%` }} 
+                    />
                 </div>
               </div>
             </div>
