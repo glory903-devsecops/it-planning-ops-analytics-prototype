@@ -2,179 +2,154 @@
 
 import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { logisticsService } from '../../services/logisticsService';
-import { formatKoreanCurrency } from '../../lib/formatters';
-import { PremiumStockChart } from '../../components/dashboard/PremiumStockChart';
-import { KpiGrid } from '../../components/dashboard/KpiGrid';
-import { AIStrategyPanel } from '../../components/ai/AIStrategyPanel';
-import { DecisionReportModal } from '../../components/dashboard/DecisionReportModal';
+import { DecisionApplication } from '../../application/useCases';
+import { ExecutiveSummaryBlock } from '../../components/dashboard/ExecutiveSummaryBlock';
+import { DecisionStockChart } from '../../components/dashboard/DecisionStockChart';
+import { AIAssistantPanel } from '../../components/ai/AIAssistantPanel';
 import { DataTable } from '../../components/ui/DataTable';
-import { useAIChat } from '../../hooks/useAIChat';
 import { usePagination } from '../../hooks/usePagination';
-import { KpiData, LogisticsOrder } from '../../types/dashboard';
 
-export default function LogisticsPage() {
+export default function LogisticsInsightPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isReportOpen, setIsReportOpen] = useState(false);
 
-  // AI Chat Hook
-  const { messages, inputValue, setInputValue, sendMessage, isTyping } = useAIChat({
-    initialMessages: [
-      { role: 'ai', content: "캠퍼스 상권의 '우유' 수요가 내일 오후 2시부터 급증할 것으로 예측됩니다. 선행 배차 승인을 권장합니다." }
-    ],
-    mode: 'scm'
-  });
-
-  useEffect(() => {
-    let mounted = true;
-    async function loadData() {
-      try {
-        const initialData = await logisticsService.getInitialData();
-        if (mounted) {
-          setData(initialData);
-          logisticsService.connectSocket(
-            (updatedData) => { if (mounted) setData({ ...updatedData }); },
-            () => {}
-          );
-        }
-      } catch (error) {
-        console.error("Failed to load logistics data:", error);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    loadData();
-    return () => {
-      mounted = false;
-      logisticsService.disconnect();
-    };
-  }, []);
-
-  // Pagination & Search Hook
   const {
-    displaySearchTerm,
-    setDisplaySearchTerm,
     currentPage,
-    setCurrentPage,
     totalPages,
+    searchTerm,
+    setSearchTerm,
+    handlePageChange,
     paginatedData,
     totalRecords,
-    sortConfig,
-    toggleSort
-  } = usePagination<LogisticsOrder>({
-    data: data?.recentOrders || [],
-    itemsPerPage: 15,
-    searchFields: ['item_name', 'store_name', 'order_id'],
-    initialSort: { key: 'timestamp', direction: 'desc' }
-  });
+    itemsPerPage
+  } = usePagination(data?.inventory || [], 12);
+
+  useEffect(() => {
+    async function loadData() {
+      const dashboard = await DecisionApplication.getLogisticsDashboard();
+      setData(dashboard);
+      setLoading(false);
+    }
+    loadData();
+  }, []);
 
   if (loading || !data) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
            <div className="relative w-24 h-24">
-              <div className="absolute inset-0 border-4 border-blue-100 rounded-full shadow-inner"></div>
-              <div className="absolute inset-0 border-4 border-[#003B6D] border-t-transparent rounded-full animate-spin shadow-lg"></div>
+              <div className="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-[#003B6D] border-t-transparent rounded-full animate-spin"></div>
            </div>
         </div>
       </DashboardLayout>
     );
   }
 
-  const kpis: KpiData[] = [
-    { label: '총 관리 매장', value: data.metrics.totalStores, unit: '개', trend: 'HQ Verified', isUp: true, color: 'text-[#003B6D]', bg: 'bg-blue-50/50' },
-    { label: '재고 위험 매장', value: data.metrics.criticalStores, unit: '건', trend: 'ACTION REQ', isUp: false, color: 'text-red-600', bg: 'bg-red-50/50' },
-    { label: '전국 평균 잔여량', value: '42.8%', unit: '', trend: '-2.1%', isUp: false, color: 'text-indigo-600', bg: 'bg-indigo-50/50' },
+  const aiResults = [
+    {
+      title: '재고 부족 위험(Stockout Risk) 경보',
+      hypothesis: '아메리카노 원두 소진 속도가 예측치보다 25% 빠름. 대학가 상권의 주말 수요 폭증 영향.',
+      recommendation: '안암역점 및 홍대입구역점에 원두 50kg 즉시 배차를 승인하고 발주 우선순위를 "Critical"로 조정하세요.',
+      metricReference: 'Risk Score 84/100, DoC 1.2 days',
+      impactScore: 94
+    },
+    {
+      title: '물류 센터 적재 효율화 제안',
+      hypothesis: '시즌 메뉴용 부자재 적재 공간 점유율이 90%에 육박하여 운영 효율 저하 발생.',
+      recommendation: '장기 적재중인 비핵심 비품을 인근 예비 창고로 이전하고 피킹(Picking) 경로를 최적화하세요.',
+      metricReference: 'Capacity Status 89%, Efficiency -12%',
+      impactScore: 78
+    }
   ];
 
-  const tableColumns = [
-    { header: '주문ID', accessor: 'order_id' as keyof LogisticsOrder, sortable: true, sortKey: 'order_id', className: 'text-gray-500 font-black' },
-    { header: '일시', accessor: 'timestamp' as keyof LogisticsOrder, sortable: true, sortKey: 'timestamp', className: 'text-gray-400' },
-    { header: '지점명', accessor: 'store_name' as keyof LogisticsOrder, sortable: true, sortKey: 'store_name', className: 'text-gray-800 font-black' },
-    { header: '품목명', accessor: 'item_name' as keyof LogisticsOrder, sortable: true, sortKey: 'item_name', className: 'text-[#003B6D] font-bold' },
-    { header: '수량', accessor: (item: LogisticsOrder) => item.qty.toLocaleString(), sortable: true, sortKey: 'qty', className: 'text-gray-600 font-black' },
-    { header: '지점공급가', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.total_price), sortable: true, sortKey: 'total_price', className: 'text-gray-900 font-black' },
-    { header: '본사구입가', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.purchase_cost), sortable: true, sortKey: 'purchase_cost', className: 'text-gray-500 font-bold' },
-    { header: '유통차익', accessor: (item: LogisticsOrder) => formatKoreanCurrency(item.distribution_margin), sortable: true, sortKey: 'distribution_margin', className: 'text-blue-600 bg-blue-50/30 px-2 py-1 rounded font-black' },
-    { header: '상태', accessor: (item: LogisticsOrder) => (
-      <span className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-full border border-green-100">{item.status}</span>
-    ), sortable: true, sortKey: 'status'}
+  const logisticsColumns = [
+    { header: '품목명', accessor: 'item_name' as any, className: 'font-black' },
+    { header: '지점명', accessor: 'store_name' as any },
+    { header: '현재고', accessor: (item: any) => `${item.current_stock.toLocaleString()} EA`, className: 'font-bold' },
+    { header: '가용재고', accessor: (item: any) => `${item.available_stock.toLocaleString()} EA` },
+    { header: '안전재고', accessor: (item: any) => `${item.safety_stock.toLocaleString()} EA`, className: 'text-gray-400' },
+    { 
+      header: '공급 가능일', 
+      accessor: (item: any) => (
+        <span className={`font-black ${item.days_of_cover < 3 ? 'text-red-600' : 'text-green-600'}`}>
+          {item.days_of_cover}일
+        </span>
+      )
+    },
+    { 
+      header: '위험도', 
+      accessor: (item: any) => (
+        <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div 
+            className={`h-full rounded-full ${item.stockout_risk_score > 70 ? 'bg-red-500' : 'bg-green-500'}`} 
+            style={{ width: `${item.stockout_risk_score}%` }} 
+          />
+        </div>
+      )
+    },
+    { 
+      header: '우선순위', 
+      accessor: (item: any) => (
+        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+          item.recommended_order_priority === 'Critical' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-50 text-gray-400'
+        }`}>
+          {item.recommended_order_priority}
+        </span>
+      )
+    }
   ];
 
   return (
     <DashboardLayout>
-      <div className="w-full space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+      <div className="w-full space-y-8 animate-in fade-in duration-1000">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 px-1">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div className="space-y-1">
-                <div className="flex items-center gap-3 text-[#003B6D] font-black text-[9px] tracking-[0.3em] uppercase opacity-70">
-                    <div className="w-10 h-[2px] bg-[#003B6D] rounded-full" /> EDIYA SCM Intelligence
+                <div className="flex items-center gap-2 text-[#003B6D] font-black text-[9px] tracking-[0.2em] uppercase opacity-70">
+                    <div className="w-8 h-[2px] bg-[#003B6D]" />
+                    EDIYA Logistics Intelligence
                 </div>
-                <h1 className="text-3xl font-black text-gray-900 tracking-tighter">물류 공급망 인사이트</h1>
+                <h1 className="text-4xl font-black text-gray-900 tracking-tighter">물류 공급망 및 재고 통찰</h1>
             </div>
-            <div className="flex items-center gap-3">
-                <div className="px-4 py-1.5 bg-white/50 border border-white/40 rounded-xl shadow-sm backdrop-blur-md flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Global Logistics Sync</span>
-                </div>
+            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 bg-white/50 px-4 py-2 rounded-2xl border border-white/40 shadow-sm backdrop-blur-sm">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                시스템 상태: <span className="text-green-600 ml-1">STABLE</span>
             </div>
         </div>
 
-        {/* KPI Grid */}
-        <KpiGrid kpis={kpis} />
+        {/* 1. Executive Summary Block */}
+        <ExecutiveSummaryBlock kpis={data.kpis} />
 
-        {/* Main Analytics Content */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 items-stretch">
-          <div className="xl:col-span-2 flex flex-col">
-            <PremiumStockChart 
-              title="지점별 원부자재 재고 변동 트렌드"
-              data={data.timeSeriesData || []}
-              filters={[
-                { label: '지점', options: data.availableStores || [], defaultValue: '강남본점' },
-                { label: '품목', options: data.availableItems || [], defaultValue: '우유' }
-              ]}
-              unit="%" height={580}
-            />
-          </div>
-          <div className="xl:col-span-1 flex flex-col">
-            <AIStrategyPanel 
-              mode="scm"
-              messages={messages}
-              inputValue={inputValue}
-              onInputChange={setInputValue}
-              onSendMessage={() => sendMessage(inputValue)}
-              onOpenReport={() => setIsReportOpen(true)}
-              isTyping={isTyping}
-            />
-          </div>
+        {/* 2 & 3. Main Chart and AI Panel Row */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-stretch">
+            <div className="xl:col-span-8 flex flex-col h-full">
+                <DecisionStockChart 
+                    title="재고 변동 및 공급 압력 지수" 
+                    data={Array.from({length: 24}, (_, i) => ({ time: `${i}:00`, value: 80 - (Math.random() * 20) }))} 
+                    unit="%"
+                />
+            </div>
+            <div className="xl:col-span-4 flex flex-col h-full">
+                <AIAssistantPanel />
+            </div>
         </div>
 
-        {/* SCM Logistics Table */}
+        {/* 4. Operational Data Table */}
         <DataTable 
-          title="지점별 물류 공급 실적 (SCM Data)"
-          subtitle={`HQ Production Analysis (Total: ${totalRecords.toLocaleString()} Records)`}
+          title="재고 현황 및 보충 권고 (SCM Snapshot)"
+          subtitle="전국 매장 원부자재 가용량 및 품절 위험도 분석"
           data={paginatedData}
-          columns={tableColumns}
-          searchTerm={displaySearchTerm}
-          onSearchChange={setDisplaySearchTerm}
+          columns={logisticsColumns}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
           totalRecords={totalRecords}
-          itemsPerPage={15}
-          onExportCsv={() => alert('CSV Export Started...')}
-          sortConfig={sortConfig}
-          onSort={toggleSort}
-        />
-
-        {/* Logistics Report Modal */}
-        <DecisionReportModal 
-          isOpen={isReportOpen}
-          onClose={() => setIsReportOpen(false)}
-          mode="scm"
-          metrics={data.metrics}
+          itemsPerPage={itemsPerPage}
+          onExportCsv={() => DecisionApplication.exportToCSV(data.inventory, 'logistics_analytics_export')}
         />
 
       </div>

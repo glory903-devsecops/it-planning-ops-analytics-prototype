@@ -41,32 +41,40 @@ export function DataTable<T>({
   onSort,
 }: DataTableProps<T>) {
   return (
-    <div className="border border-white/40 bg-white/70 backdrop-blur-xl shadow-2xl rounded-[3rem] overflow-hidden p-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-10 px-4 gap-6">
-        <div className="space-y-1">
-          <h3 className="text-2xl font-black text-gray-900 tracking-tight">{title}</h3>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{subtitle}</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="relative group">
-            <input 
-              type="text" 
-              placeholder="검색어 입력..."
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-12 pr-6 py-3.5 bg-gray-50 border-none rounded-2xl text-xs font-bold w-72 focus:ring-4 focus:ring-[#003B6D]/5 transition-all shadow-inner"
-            />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+    <div className="w-full glass-card rounded-[2.5rem] overflow-hidden transition-all duration-700">
+      <div className="p-10 border-b border-white/5 bg-white/5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-6 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(56,189,248,0.3)]" />
+              <h2 className="text-xl font-black text-white tracking-tighter uppercase italic">{title}</h2>
+            </div>
+            {subtitle && <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-4">{subtitle}</p>}
           </div>
-          {onExportCsv && (
-            <button 
-              onClick={onExportCsv}
-              className="px-6 py-3.5 bg-[#003B6D] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl flex items-center gap-2"
-            >
-              <Download className="w-4 h-4" />
-              CSV 데이터 추출
-            </button>
+          
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="relative group/search">
+              <Search className="w-4 h-4 text-slate-500 absolute left-4 top-1/2 transform -translate-y-1/2 group-focus-within/search:text-blue-400 transition-colors" />
+              <input 
+                type="text" 
+                placeholder="Filter logs..." 
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="pl-11 pr-5 py-3 bg-slate-900 border border-white/5 rounded-xl text-xs text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 w-64 transition-all placeholder:text-slate-700"
+              />
+            </div>
+            {onExportCsv && (
+               <button 
+                onClick={onExportCsv}
+                className="px-6 py-3.5 bg-gradient-to-r from-[#003B6D] to-[#001D3D] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(0,59,109,0.2)] flex items-center gap-2 group/csv"
+              >
+                <Download className="w-4 h-4 group-hover/csv:animate-bounce" />
+                분석 데이터(CSV) 추출
+              </button>
+              <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest mr-2">
+                *분석용 시간 차원(Year/Month/Day/...) 포함
+              </span>
+            </div>
           )}
         </div>
       </div>

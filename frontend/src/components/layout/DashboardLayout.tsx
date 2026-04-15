@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Search, Menu, TrendingUp, Truck, Network, Bell, X } from 'lucide-react';
+import { Search, Menu, TrendingUp, Truck, Network, Bell, X, Target, LayoutDashboard, Database, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Footer } from './Footer';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -10,110 +11,122 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isSales = pathname === '/';
   const isLogistics = pathname?.startsWith('/logistics');
   const isNetwork = pathname?.startsWith('/network');
+  const isStrategic = pathname?.startsWith('/strategic');
 
   return (
-    <div className="flex h-screen bg-[#001D3D] text-gray-900 overflow-hidden font-sans font-light relative">
-      {/* Premium Background Image */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-40 mix-blend-overlay bg-cover bg-center bg-no-repeat fixed"
-        style={{ backgroundImage: `url('/images/dashboard_bg.png')` }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#001D3D]/80 via-transparent to-black/20 pointer-events-none" />
+    <div className="flex h-screen bg-[#020617] text-slate-200 overflow-hidden font-sans relative">
+      {/* Immersive Background Effects */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full animate-pulse style={{ animationDelay: '2s' }}" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+      </div>
       
-      {/* Sidebar with Sliding Animation */}
-      <aside className={`fixed inset-y-0 left-0 z-30 transform ${isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0'} bg-white/90 backdrop-blur-xl border-r border-white/50 flex flex-col shadow-[4px_0_24px_-10px_rgba(0,0,0,0.05)] justify-between transition-all duration-300 ease-in-out`}>
-        <div className={isSidebarOpen ? 'opacity-100 transition-opacity delay-100' : 'opacity-0 pointer-events-none'}>
-          <div className="p-6 mb-4 h-20 flex items-center justify-between bg-gradient-to-br from-white/60 to-transparent border-b border-gray-100">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-br from-[#003B6D] to-[#001D3D] text-white w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xl shadow-md tracking-wider">
-                E
+      {/* Navigation Sidebar (Obsidian Glass) */}
+      <aside className={`fixed inset-y-0 left-0 z-40 transform ${isSidebarOpen ? 'translate-x-0 w-72' : '-translate-x-full w-0'} glass-panel border-r border-white/5 flex flex-col justify-between transition-all duration-500 ease-[cubic-bezier(0.33,1,0.68,1)]`}>
+        <div className={`flex-1 flex flex-col ${isSidebarOpen ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="p-8 h-24 flex items-center justify-between border-b border-white/5">
+            <div className="flex items-center space-x-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-blue-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative bg-gradient-to-br from-blue-500 to-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-xl shadow-2xl border border-white/20">
+                  E
+                </div>
               </div>
-              <span className="font-bold text-lg tracking-tight text-[#002C5F]">이디야 AX</span>
+              <div className="flex flex-col">
+                <span className="font-black text-lg tracking-tighter text-white">EDIYA AX</span>
+                <span className="text-[9px] font-bold text-blue-400 uppercase tracking-[0.2em] -mt-1">Command Center</span>
+              </div>
             </div>
             <button 
               onClick={() => setIsSidebarOpen(false)}
-              className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+              className="p-2 hover:bg-white/5 rounded-xl text-slate-500 hover:text-white transition-all"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
           
-          <nav className="px-4 space-y-2 mt-4">
-            <Link href="/" className={`group flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${isSales ? 'bg-gradient-to-r from-blue-50 to-transparent text-[#003B6D] shadow-sm ring-1 ring-blue-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}>
-              <div className={`p-1.5 rounded-lg transition-colors ${isSales ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
-                 <TrendingUp className={`w-5 h-5 transition-transform ${isSales ? 'text-[#003B6D] scale-110' : 'text-gray-400 group-hover:text-blue-500 group-hover:scale-110'}`} />
-              </div>
-              <span className={isSales ? 'font-bold' : ''}>매출 인사이트</span>
+          <nav className="p-6 space-y-4">
+            <div className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">Operations</div>
+            
+            <Link href="/" className={`group flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${isSales ? 'bg-blue-500/10 text-blue-400 ring-1 ring-blue-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+              <TrendingUp className={`w-5 h-5 ${isSales ? 'text-blue-400' : 'group-hover:text-blue-400'}`} />
+              <span className={`text-sm tracking-tight ${isSales ? 'font-black' : 'font-bold'}`}>Sales Insight</span>
             </Link>
-            <Link href="/logistics" className={`group flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${isLogistics ? 'bg-gradient-to-r from-blue-50 to-transparent text-[#003B6D] shadow-sm ring-1 ring-blue-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}>
-              <div className={`p-1.5 rounded-lg transition-colors ${isLogistics ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
-                 <Truck className={`w-5 h-5 transition-transform ${isLogistics ? 'text-[#003B6D] scale-110' : 'text-gray-400 group-hover:text-blue-500 group-hover:scale-110'}`} />
-              </div>
-              <span className={isLogistics ? 'font-bold' : ''}>물류 인사이트</span>
+            
+            <Link href="/logistics" className={`group flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${isLogistics ? 'bg-indigo-500/10 text-indigo-400 ring-1 ring-indigo-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+              <Truck className={`w-5 h-5 ${isLogistics ? 'text-indigo-400' : 'group-hover:text-indigo-400'}`} />
+              <span className={`text-sm tracking-tight ${isLogistics ? 'font-black' : 'font-bold'}`}>Logistics Hub</span>
             </Link>
-            <Link href="/network" className={`group flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${isNetwork ? 'bg-gradient-to-r from-blue-50 to-transparent text-[#003B6D] shadow-sm ring-1 ring-blue-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800'}`}>
-              <div className={`p-1.5 rounded-lg transition-colors ${isNetwork ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
-                 <Network className={`w-5 h-5 transition-transform ${isNetwork ? 'text-[#003B6D] scale-110' : 'text-gray-400 group-hover:text-blue-500 group-hover:scale-110'}`} />
-              </div>
-              <span className={isNetwork ? 'font-bold' : ''}>네트워크 인사이트</span>
+            
+            <Link href="/network" className={`group flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${isNetwork ? 'bg-rose-500/10 text-rose-400 ring-1 ring-rose-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+              <Network className={`w-5 h-5 ${isNetwork ? 'text-rose-400' : 'group-hover:text-rose-400'}`} />
+              <span className={`text-sm tracking-tight ${isNetwork ? 'font-black' : 'font-bold'}`}>Infra Monitoring</span>
+            </Link>
+
+            <div className="pt-8 px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4">Intelligence</div>
+            
+            <Link href="/strategic" className={`group flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all duration-300 ${isStrategic ? 'bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+              <Zap className={`w-5 h-5 ${isStrategic ? 'text-emerald-400' : 'group-hover:text-emerald-400'}`} />
+              <span className={`text-sm tracking-tight ${isStrategic ? 'font-black' : 'font-bold'}`}>Strategic Intelligence</span>
             </Link>
           </nav>
         </div>
         
-        <div className="p-4 border-t border-gray-200 bg-gray-50/50 flex justify-center">
-          <a target="_blank" rel="noopener noreferrer" href="https://github.com/glory903-devsecops/it-planning-ops-analytics-prototype.git" className="p-2 text-gray-400 hover:text-[#002C5F] hover:bg-gray-100 rounded-full transition-colors" title="GitHub Repository">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-            </svg>
-          </a>
+        <div className="p-8 border-t border-white/5 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10" />
+                <div className="flex flex-col">
+                    <span className="text-xs font-bold text-white">HQ Administrator</span>
+                    <span className="text-[10px] text-slate-500 font-medium">Enterprise Tier</span>
+                </div>
+            </div>
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
         </div>
       </aside>
 
-      {/* Main Content Area - Transitions margin when sidebar slides */}
-      <main className={`flex-1 flex flex-col min-w-0 bg-[#F4F7FC] transition-all duration-300 ${isSidebarOpen ? 'pl-64' : 'pl-0'}`}>
-        {/* Top Header */}
-        <header className="h-16 bg-white/70 backdrop-blur-lg border-b border-white flex items-center justify-between px-6 z-20 shrink-0 sticky top-0 shadow-[0_4px_24px_-10px_rgba(0,0,0,0.03)]">
-          <div className="flex items-center text-gray-800">
+      {/* Main Command Workspace */}
+      <main className={`flex-1 flex flex-col min-w-0 bg-transparent transition-all duration-500 ease-[cubic-bezier(0.33,1,0.68,1)] ${isSidebarOpen ? 'pl-72' : 'pl-0'}`}>
+        {/* Futuristic Header */}
+        <header className="h-20 bg-[#020617]/40 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-10 z-30 sticky top-0">
+          <div className="flex items-center">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="mr-4 hover:bg-gray-100 p-2 rounded-lg transition-colors group"
+              className="mr-6 p-2.5 glass-card rounded-xl text-slate-400 hover:text-white transition-all shadow-xl"
             >
-              <Menu className={`w-6 h-6 text-gray-500 group-hover:text-[#003B6D] transition-transform ${isSidebarOpen ? 'rotate-90' : 'rotate-0'}`} />
+              <Menu className={`w-5 h-5 transition-transform ${isSidebarOpen ? 'rotate-90' : 'rotate-0'}`} />
             </button>
-            <div className={`flex items-center gap-2 transition-all duration-300 ${isSidebarOpen ? 'opacity-0 -translate-x-4 pointer-events-none w-0 overflow-hidden' : 'opacity-100 translate-x-0 w-auto'}`}>
-              <div className="bg-[#003B6D] text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold shadow-sm">E</div>
-              <span className="font-bold text-base tracking-tight text-[#002C5F]">이디야 AX</span>
+            <div className="flex flex-col">
+                <h1 className="text-xl font-black text-white tracking-tighter uppercase italic">Decision Intelligence</h1>
+                <div className="flex items-center gap-2 text-[9px] font-black text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20 w-fit">
+                    <Database className="w-3 h-3" />
+                    Secure Data Stream Active
+                </div>
             </div>
-            {!isSidebarOpen && <div className="w-[1px] h-6 bg-gray-200 mx-4" />}
-            <h1 className="text-lg font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-800 to-gray-500 drop-shadow-sm">AX Decision Platform</h1>
           </div>
           
-          <div className="flex items-center space-x-5">
-            <div className="relative hidden md:block group">
-              <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2 group-focus-within:text-blue-500 transition-colors" />
+          <div className="flex items-center space-x-6">
+            <div className="relative hidden lg:block">
+              <Search className="w-4 h-4 text-slate-500 absolute left-4 top-1/2 transform -translate-y-1/2" />
               <input 
                 type="text" 
-                placeholder="인사이트 통합 검색..." 
-                className="pl-11 pr-4 py-2.5 border border-gray-200/60 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#003B6D]/30 focus:border-[#003B6D] w-72 transition-all bg-white/50 backdrop-blur shadow-inner group-hover:border-gray-300"
+                placeholder="Query decision matrices..." 
+                className="pl-12 pr-6 py-3 bg-white/5 border border-white/5 rounded-2xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/30 w-80 transition-all placeholder:text-slate-600 focus:bg-white/10"
               />
             </div>
-            <button className="relative p-2.5 text-gray-500 hover:text-[#003B6D] hover:bg-blue-50 rounded-xl transition-all hover:scale-105 active:scale-95 bg-white shadow-sm border border-gray-100">
+            <div className="h-8 w-[1px] bg-white/5 mx-2" />
+            <button className="relative p-3 glass-card rounded-2xl text-slate-400 hover:text-blue-400">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 animate-pulse rounded-full border-2 border-white shadow-sm"></span>
+              <span className="absolute top-3 right-3 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#020617] shadow-lg"></span>
             </button>
           </div>
         </header>
 
-        {/* Page Content */}
-        <div className="flex-1 overflow-auto p-8 custom-scrollbar relative flex flex-col">
-          <div className="flex-1">
-            {children}
-          </div>
-          {/* Disclaimer Footer */}
-          <div className="mt-8 pt-4 border-t border-gray-200 text-center pb-2">
-            <p className="text-xs text-gray-500 font-medium">
-              ※ 본 대시보드에 표출되는 메뉴명, 매장명은 이디야커피의 일부 명칭을 차용하였으나, 모든 매출액 정보, 판매량, 에러 수치 등은 실제 영업과 무관한 시스템 시뮬레이션용 가상 데이터입니다.
-            </p>
+        {/* Dynamic Canvas Area */}
+        <div className="flex-1 overflow-auto p-10 custom-scrollbar relative">
+          {children}
+          <div className="mt-16 opacity-30">
+            <Footer />
           </div>
         </div>
       </main>

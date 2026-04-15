@@ -58,94 +58,106 @@ export function DashboardCharts({
   const yAxisMax = Math.ceil(maxTotalSales * 1.1);
 
   return (
-    <div className="mb-8 w-full group">
-      <Card className="border border-white/40 bg-white/70 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] rounded-3xl overflow-hidden group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500">
-        <CardHeader className="bg-gradient-to-r from-gray-50/80 to-transparent border-b border-gray-100/50 flex flex-col gap-4 p-8">
+    <div className="w-full group h-full">
+      <Card className="glass-card rounded-[2.5rem] overflow-hidden transition-all duration-700 h-full flex flex-col">
+        <CardHeader className="border-b border-white/5 flex flex-col gap-6 p-8 shrink-0">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-8 bg-gradient-to-b from-[#003B6D] to-blue-400 rounded-full" />
-              <CardTitle className="text-xl font-black text-gray-800 tracking-tight">시간대별 매출 트렌드</CardTitle>
+            <div className="flex items-center space-x-4">
+              <div className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full shadow-[0_0_15px_rgba(56,189,248,0.4)]" />
+              <CardTitle className="text-xl font-black text-white tracking-tighter uppercase italic">Time-Series Trends</CardTitle>
             </div>
-            <span className="text-xs font-bold text-[#003B6D] bg-blue-50 px-3 py-1 rounded-full border border-blue-100">REAL-TIME</span>
+            <div className="flex items-center gap-2 text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 backdrop-blur-md">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse mr-1" />
+                LIVE STREAM
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-            <div className="space-y-1.5">
-              <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Menu Filter</label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-[9px] uppercase font-black text-slate-500 tracking-[0.2em] ml-1">Menu Asset</label>
               <select 
                 value={selectedItem}
                 onChange={handleItemChange}
-                className="w-full text-sm font-semibold border-none rounded-xl focus:ring-2 focus:ring-[#003B6D]/20 py-2.5 px-4 bg-white/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] appearance-none cursor-pointer transition-all hover:bg-white"
+                className="w-full text-xs font-bold border border-white/5 rounded-xl focus:ring-2 focus:ring-blue-500/30 py-3 px-5 bg-white/5 text-slate-300 appearance-none cursor-pointer hover:bg-white/10 transition-all"
               >
-                <option value="전체 품목">✨ 전체 품목 점검</option>
-                {availableItems.map(item => <option key={item} value={item}>{item}</option>)}
+                <option value="전체 품목">✨ All Menu Assets</option>
+                {availableItems.map(item => <option key={item} value={item} className="bg-[#020617]">{item}</option>)}
               </select>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Store Filter</label>
+            <div className="space-y-2">
+              <label className="text-[9px] uppercase font-black text-slate-500 tracking-[0.2em] ml-1">Operational Store</label>
               <select 
                 value={selectedStore}
                 onChange={handleStoreChange}
-                className="w-full text-sm font-semibold border-none rounded-xl focus:ring-2 focus:ring-[#003B6D]/20 py-2.5 px-4 bg-white/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] appearance-none cursor-pointer transition-all hover:bg-white"
+                className="w-full text-xs font-bold border border-white/5 rounded-xl focus:ring-2 focus:ring-blue-500/30 py-3 px-5 bg-white/5 text-slate-300 appearance-none cursor-pointer hover:bg-white/10 transition-all"
               >
-                <option value="전체 지점">📍 전체 지점 현황</option>
-                {availableStores.map(store => <option key={store} value={store}>{store}</option>)}
+                <option value="전체 지점">📍 All Global Stores</option>
+                {availableStores.map(store => <option key={store} value={store} className="bg-[#020617]">{store}</option>)}
               </select>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Channel Filter</label>
+            <div className="space-y-2">
+              <label className="text-[9px] uppercase font-black text-slate-500 tracking-[0.2em] ml-1">Sales Channel</label>
               <select 
                 value={selectedChannel}
                 onChange={handleChannelChange}
-                className="w-full text-sm font-semibold border-none rounded-xl focus:ring-2 focus:ring-[#003B6D]/20 py-2.5 px-4 bg-white/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] appearance-none cursor-pointer transition-all hover:bg-white"
+                className="w-full text-xs font-bold border border-white/5 rounded-xl focus:ring-2 focus:ring-blue-500/30 py-3 px-5 bg-white/5 text-slate-300 appearance-none cursor-pointer hover:bg-white/10 transition-all"
               >
-                <option value="전체 채널">📱 전체 채널 분석</option>
-                {availableChannels.map(channel => <option key={channel} value={channel}>{channel}</option>)}
+                <option value="전체 채널">📱 All Analytics Channels</option>
+                {availableChannels.map(channel => <option key={channel} value={channel} className="bg-[#020617]">{channel}</option>)}
               </select>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="h-[480px] p-8">
+        <CardContent className="flex-grow p-8 pt-10 min-h-[450px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={timeSeriesData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="0" vertical={false} stroke="#f1f5f9" />
+            <LineChart data={timeSeriesData} margin={{ top: 20, right: 30, left: 10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.1}/>
+                  <stop offset="95%" stopColor="#38bdf8" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
               <XAxis 
                 dataKey="time" 
-                tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }} 
+                tick={{ fill: '#475569', fontSize: 10, fontWeight: 800 }} 
                 axisLine={false} 
                 tickLine={false}
-                minTickGap={20}
-                dy={10}
+                minTickGap={30}
+                dy={15}
               />
               <YAxis 
                 domain={[0, yAxisMax]}
-                tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }} 
+                tick={{ fill: '#475569', fontSize: 10, fontWeight: 800 }} 
                 axisLine={false} 
                 tickLine={false}
-                tickFormatter={(value) => value === 0 ? '0' : value >= 10000 ? `${(value/10000).toFixed(0)}만` : value.toLocaleString()}
-                dx={-10}
+                tickFormatter={(value) => value === 0 ? '0' : value >= 10000 ? `${(value/10000).toFixed(0)}M` : value.toLocaleString()}
+                dx={-15}
               />
               <Tooltip 
-                cursor={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                cursor={{ stroke: 'rgba(56,189,248,0.2)', strokeWidth: 2 }}
                 contentStyle={{ 
-                  borderRadius: '20px', 
-                  border: 'none', 
-                  backgroundColor: 'rgba(255,255,255,0.9)', 
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', 
-                  padding: '16px',
-                  fontWeight: 'bold'
+                  borderRadius: '1.5rem', 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+                  backdropFilter: 'blur(12px)',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', 
+                  padding: '20px',
+                  fontWeight: 'black',
+                  color: '#fff'
                 }}
+                itemStyle={{ color: '#38bdf8' }}
                 formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, selectedDataKey]}
-                labelStyle={{ color: '#64748b', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase' }}
+                labelStyle={{ color: '#64748b', marginBottom: '8px', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
               />
               <Line 
-                type="natural" 
+                type="monotone" 
                 dataKey={selectedDataKey} 
-                stroke="#003B6D" 
-                strokeWidth={4}
+                stroke="#38bdf8" 
+                strokeWidth={5}
                 dot={false}
-                activeDot={{ r: 8, fill: '#003B6D', stroke: '#fff', strokeWidth: 3 }}
-                animationDuration={1500}
+                activeDot={{ r: 6, fill: '#38bdf8', stroke: '#020617', strokeWidth: 4, shadow: '0 0 20px rgba(56,189,248,0.8)' }}
+                animationDuration={2000}
+                fill="url(#colorSales)"
               />
             </LineChart>
           </ResponsiveContainer>
