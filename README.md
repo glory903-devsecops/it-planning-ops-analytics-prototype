@@ -2,10 +2,15 @@
 
 <div align="center">
   <br />
-  <img src="https://img.shields.io/badge/Aesthetics-Glassmorphism-blue?style=for-the-badge&logo=css3&logoColor=white" />
-  <img src="https://img.shields.io/badge/Architecture-Clean_Architecture-003B6D?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Scale-1,000+_Transactions_/_Sec-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/AI-Autonomous_Strategy_Advisor-FF6F61?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
+  <br />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
   <br />
   <br />
   <a href="https://glory903-devsecops.github.io/it-planning-ops-analytics-prototype/">
@@ -58,16 +63,19 @@
 
 ---
 
-## ⚙️ 실행 방법
+## ⚙️ 초고속 로컬 실행 (Terminal 3-Lines)
 
-**데모 사이트 확인:**
-👉 [EDIYA AX LIVE DEMO](https://glory903-devsecops.github.io/it-planning-ops-analytics-prototype/)
+Docker Desktop이 설치되어 있다면, 터미널에 아래 **3줄의 명령어**를 복사해 붙여넣는 것만으로 모든 시스템(Frontend, Backend, DB, Redis)이 즉시 자동 가동됩니다.
 
-**로컬 실행:**
 ```bash
-# Frontend 실행
-cd frontend && npm install && npm run dev
+git clone https://github.com/glory903-devsecops/it-planning-ops-analytics-prototype.git
+cd it-planning-ops-analytics-prototype
+chmod +x ax-boot.sh && ./ax-boot.sh
 ```
+
+**사전 준비 (Prerequisites):**
+- **Docker Desktop** 설치 및 실행 상태 확인
+- (데모 사이트 확인: [EDIYA AX LIVE DEMO](https://glory903-devsecops.github.io/it-planning-ops-analytics-prototype/))
 
 ---
 
