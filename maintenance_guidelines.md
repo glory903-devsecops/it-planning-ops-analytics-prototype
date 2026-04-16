@@ -7,7 +7,7 @@
 ## 1. 시각적 기초 레이어 (Visual Foundation)
 플랫폼 전체의 테마, 색상 및 유리 질감(Glassmorphism)을 수정하려면 이 파일을 가장 먼저 확인하십시오.
 
-- **핵심 파일**: [`frontend/src/app/globals.css`](file:///Users/glory1994/Library/CloudStorage/GoogleDrive-glory.lee903@gmail.com/내 드라이브/99.Develop/it-planning-ops-analytics-prototype/frontend/src/app/globals.css)
+- **핵심 파일**: [`frontend/src/app/globals.css`](frontend/src/app/globals.css)
 - **수정 항목**: 
     - `:root` 변수: 전역 배경색, 강조색(Accent), 글래스 글로우 강도.
     - `.glass-card`: 모든 모듈에 공통 적용되는 투명도 및 블러 효과.
@@ -16,7 +16,7 @@
 ## 2. 구조적 레이어 (Layout & Navigation)
 사이드바, 헤더, 전역 배경 애니메이션을 수정하려면 이 파일을 확인하십시오.
 
-- **핵심 파일**: [`frontend/src/components/layout/DashboardLayout.tsx`](file:///Users/glory1994/Library/CloudStorage/GoogleDrive-glory.lee903@gmail.com/내 드라이브/99.Develop/it-planning-ops-analytics-prototype/frontend/src/components/layout/DashboardLayout.tsx)
+- **핵심 파일**: [`frontend/src/components/layout/DashboardLayout.tsx`](frontend/src/components/layout/DashboardLayout.tsx)
 - **수정 항목**:
     - **사이드바**: 메뉴 아이콘, 네비게이션 링크, 활성화된 메뉴의 'Sapphire Glow' 효과.
     - **헤더**: 'Decision Intelligence' 로고 및 알림/검색 영역.
