@@ -8,6 +8,7 @@ import { DecisionStockChart } from '../../components/dashboard/DecisionStockChar
 import { AIAssistantPanel } from '../../components/ai/AIAssistantPanel';
 import { DataTable } from '../../components/ui/DataTable';
 import { usePagination } from '../../hooks/usePagination';
+import { Zap } from 'lucide-react';
 
 export default function NetworkInsightPage() {
   const [data, setData] = useState<any>(null);

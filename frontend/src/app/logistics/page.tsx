@@ -8,6 +8,7 @@ import { DecisionStockChart } from '../../components/dashboard/DecisionStockChar
 import { AIAssistantPanel } from '../../components/ai/AIAssistantPanel';
 import { DataTable } from '../../components/ui/DataTable';
 import { usePagination } from '../../hooks/usePagination';
+import { Database } from 'lucide-react';
 
 export default function LogisticsInsightPage() {
   const [data, setData] = useState<any>(null);
