@@ -17,12 +17,14 @@ interface ChartProps {
   availableChannels?: string[];
 }
 
-export function DashboardCharts({ 
+export function DecisionStockChart({ 
   timeSeriesData, 
   availableItems = [], 
   availableStores = [], 
-  availableChannels = [] 
-}: ChartProps) {
+  availableChannels = [],
+  title = "Time-Series Trends",
+  unit = "₩"
+}: ChartProps & { title?: string; unit?: string }) {
   const [selectedItem, setSelectedItem] = useState('전체 품목');
   const [selectedStore, setSelectedStore] = useState('전체 지점');
   const [selectedChannel, setSelectedChannel] = useState('전체 채널');
@@ -59,50 +61,50 @@ export function DashboardCharts({
 
   return (
     <div className="w-full group h-full">
-      <Card className="glass-card rounded-[2.5rem] overflow-hidden transition-all duration-700 h-full flex flex-col">
-        <CardHeader className="border-b border-white/5 flex flex-col gap-6 p-8 shrink-0">
+      <Card className="glass-card rounded-[2.5rem] overflow-hidden transition-all duration-700 h-full flex flex-col bg-white">
+        <CardHeader className="border-b border-slate-100 flex flex-col gap-6 p-8 shrink-0 bg-slate-50/50">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <div className="w-1.5 h-8 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full shadow-[0_0_15px_rgba(56,189,248,0.4)]" />
-              <CardTitle className="text-xl font-black text-white tracking-tighter uppercase italic">Time-Series Trends</CardTitle>
+              <div className="w-1.5 h-8 bg-gradient-to-b from-orange-400 to-red-600 rounded-full shadow-sm" />
+              <CardTitle className="text-xl font-black text-slate-900 tracking-tighter uppercase italic">{title}</CardTitle>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 backdrop-blur-md">
-                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse mr-1" />
-                LIVE STREAM
+            <div className="flex items-center gap-2 text-[10px] font-black text-[#059669] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse mr-1" />
+                LIVE INTELLIGENCE STREAM
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <label className="text-[9px] uppercase font-black text-slate-500 tracking-[0.2em] ml-1">Menu Asset</label>
+              <label className="text-[9px] uppercase font-black text-slate-400 tracking-[0.2em] ml-1">Menu Asset</label>
               <select 
                 value={selectedItem}
                 onChange={handleItemChange}
-                className="w-full text-xs font-bold border border-white/5 rounded-xl focus:ring-2 focus:ring-blue-500/30 py-3 px-5 bg-white/5 text-slate-300 appearance-none cursor-pointer hover:bg-white/10 transition-all"
+                className="w-full text-xs font-bold border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500/10 py-3 px-5 bg-white text-slate-800 appearance-none cursor-pointer hover:bg-slate-50 transition-all shadow-sm"
               >
                 <option value="전체 품목">✨ All Menu Assets</option>
-                {availableItems.map(item => <option key={item} value={item} className="bg-[#020617]">{item}</option>)}
+                {availableItems.map(item => <option key={item} value={item}>{item}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[9px] uppercase font-black text-slate-500 tracking-[0.2em] ml-1">Operational Store</label>
+              <label className="text-[9px] uppercase font-black text-slate-400 tracking-[0.2em] ml-1">Operational Store</label>
               <select 
                 value={selectedStore}
                 onChange={handleStoreChange}
-                className="w-full text-xs font-bold border border-white/5 rounded-xl focus:ring-2 focus:ring-blue-500/30 py-3 px-5 bg-white/5 text-slate-300 appearance-none cursor-pointer hover:bg-white/10 transition-all"
+                className="w-full text-xs font-bold border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500/10 py-3 px-5 bg-white text-slate-800 appearance-none cursor-pointer hover:bg-slate-50 transition-all shadow-sm"
               >
                 <option value="전체 지점">📍 All Global Stores</option>
-                {availableStores.map(store => <option key={store} value={store} className="bg-[#020617]">{store}</option>)}
+                {availableStores.map(store => <option key={store} value={store}>{store}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-[9px] uppercase font-black text-slate-500 tracking-[0.2em] ml-1">Sales Channel</label>
+              <label className="text-[9px] uppercase font-black text-slate-400 tracking-[0.2em] ml-1">Sales Channel</label>
               <select 
                 value={selectedChannel}
                 onChange={handleChannelChange}
-                className="w-full text-xs font-bold border border-white/5 rounded-xl focus:ring-2 focus:ring-blue-500/30 py-3 px-5 bg-white/5 text-slate-300 appearance-none cursor-pointer hover:bg-white/10 transition-all"
+                className="w-full text-xs font-bold border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500/10 py-3 px-5 bg-white text-slate-800 appearance-none cursor-pointer hover:bg-slate-50 transition-all shadow-sm"
               >
                 <option value="전체 채널">📱 All Analytics Channels</option>
-                {availableChannels.map(channel => <option key={channel} value={channel} className="bg-[#020617]">{channel}</option>)}
+                {availableChannels.map(channel => <option key={channel} value={channel}>{channel}</option>)}
               </select>
             </div>
           </div>
@@ -112,14 +114,14 @@ export function DashboardCharts({
             <LineChart data={timeSeriesData} margin={{ top: 20, right: 30, left: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#38bdf8" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#AF002D" stopOpacity={0.1}/>
+                  <stop offset="95%" stopColor="#AF002D" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(15,23,36,0.05)" />
               <XAxis 
                 dataKey="time" 
-                tick={{ fill: '#475569', fontSize: 10, fontWeight: 800 }} 
+                tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 800 }} 
                 axisLine={false} 
                 tickLine={false}
                 minTickGap={30}
@@ -127,35 +129,35 @@ export function DashboardCharts({
               />
               <YAxis 
                 domain={[0, yAxisMax]}
-                tick={{ fill: '#475569', fontSize: 10, fontWeight: 800 }} 
+                tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 800 }} 
                 axisLine={false} 
                 tickLine={false}
                 tickFormatter={(value) => value === 0 ? '0' : value >= 10000 ? `${(value/10000).toFixed(0)}M` : value.toLocaleString()}
                 dx={-15}
               />
               <Tooltip 
-                cursor={{ stroke: 'rgba(56,189,248,0.2)', strokeWidth: 2 }}
+                cursor={{ stroke: 'rgba(175,0,45,0.1)', strokeWidth: 2 }}
                 contentStyle={{ 
                   borderRadius: '1.5rem', 
-                  border: '1px solid rgba(255,255,255,0.1)', 
-                  backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+                  border: '1px solid rgba(15,23,36,0.1)', 
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)', 
                   backdropFilter: 'blur(12px)',
-                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', 
+                  boxShadow: '0 20px 40px -10px rgba(15, 23, 36, 0.15)', 
                   padding: '20px',
                   fontWeight: 'black',
-                  color: '#fff'
+                  color: '#0F1724'
                 }}
-                itemStyle={{ color: '#38bdf8' }}
-                formatter={(value: any) => [`₩ ${Number(value).toLocaleString()}`, selectedDataKey]}
-                labelStyle={{ color: '#64748b', marginBottom: '8px', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
+                itemStyle={{ color: '#AF002D' }}
+                formatter={(value: any) => [`${unit} ${Number(value).toLocaleString()}`, selectedDataKey]}
+                labelStyle={{ color: '#94a3b8', marginBottom: '8px', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
               />
               <Line 
                 type="monotone" 
                 dataKey={selectedDataKey} 
-                stroke="#38bdf8" 
+                stroke="#AF002D" 
                 strokeWidth={5}
                 dot={false}
-                activeDot={{ r: 6, fill: '#38bdf8', stroke: '#020617', strokeWidth: 4, shadow: '0 0 20px rgba(56,189,248,0.8)' }}
+                activeDot={{ r: 6, fill: '#AF002D', stroke: '#fff', strokeWidth: 4, shadow: '0 10px 20px rgba(175,0,45,0.2)' }}
                 animationDuration={2000}
                 fill="url(#colorSales)"
               />
@@ -164,5 +166,7 @@ export function DashboardCharts({
         </CardContent>
       </Card>
     </div>
+  );
+}
   );
 }

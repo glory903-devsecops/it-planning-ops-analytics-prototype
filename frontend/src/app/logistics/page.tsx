@@ -38,15 +38,15 @@ export default function LogisticsInsightPage() {
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center h-full space-y-8 animate-pulse">
             <div className="relative w-32 h-32">
-                <div className="absolute inset-0 border-[6px] border-white/5 rounded-full" />
-                <div className="absolute inset-0 border-[6px] border-emerald-500 border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(16,185,129,0.4)]" />
+                <div className="absolute inset-0 border-[6px] border-slate-100 rounded-full" />
+                <div className="absolute inset-0 border-[6px] border-[#059669] border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(16,185,129,0.1)]" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-10 h-10 text-emerald-400" />
+                    <Database className="w-10 h-10 text-[#059669]" />
                 </div>
             </div>
             <div className="text-center space-y-2">
-                <h2 className="text-xl font-black text-white uppercase tracking-[0.3em] italic">Synchronizing Logistics Core</h2>
-                <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest justify-center">
+                <h2 className="text-xl font-black text-slate-900 uppercase tracking-[0.3em] italic">Synchronizing Logistics Core</h2>
+                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest justify-center">
                     Connecting to SCM Global Data Stream
                 </div>
             </div>
@@ -55,32 +55,15 @@ export default function LogisticsInsightPage() {
     );
   }
 
-  const aiResults = [
-    {
-      title: '재고 부족 위험(Stockout Risk) 경보',
-      hypothesis: '아메리카노 원두 소진 속도가 예측치보다 25% 빠름. 대학가 상권의 주말 수요 폭증 영향.',
-      recommendation: '안암역점 및 홍대입구역점에 원두 50kg 즉시 배차를 승인하고 발주 우선순위를 "Critical"로 조정하세요.',
-      metricReference: 'Risk Score 84/100, DoC 1.2 days',
-      impactScore: 94
-    },
-    {
-      title: '물류 센터 적재 효율화 제안',
-      hypothesis: '시즌 메뉴용 부자재 적재 공간 점유율이 90%에 육박하여 운영 효율 저하 발생.',
-      recommendation: '장기 적재중인 비핵심 비품을 인근 예비 창고로 이전하고 피킹(Picking) 경로를 최적화하세요.',
-      metricReference: 'Capacity Status 89%, Efficiency -12%',
-      impactScore: 78
-    }
-  ];
-
   const logisticsColumns = [
-    { header: '품목명', accessor: 'item_name' as any, className: 'font-black text-white text-base' },
-    { header: '지점명', accessor: 'store_name' as any, className: 'font-bold' },
-    { header: '현재고', accessor: (item: any) => `${item.current_stock.toLocaleString()} EA`, className: 'font-black text-emerald-400' },
-    { header: '가용재고', accessor: (item: any) => `${item.available_stock.toLocaleString()} EA`, className: 'font-bold text-slate-300' },
+    { header: '품목명', accessor: 'item_name' as any, className: 'font-black text-slate-900 text-base' },
+    { header: '지점명', accessor: 'store_name' as any, className: 'font-bold text-slate-500' },
+    { header: '현재고', accessor: (item: any) => `${item.current_stock.toLocaleString()} EA`, className: 'font-black text-[#059669]' },
+    { header: '가용재고', accessor: (item: any) => `${item.available_stock.toLocaleString()} EA`, className: 'font-bold text-slate-400' },
     { 
       header: '공급 가능일', 
       accessor: (item: any) => (
-        <span className={`font-black tracking-tighter text-base ${item.days_of_cover < 3 ? 'text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.3)]' : 'text-emerald-400'}`}>
+        <span className={`font-black tracking-tighter text-base ${item.days_of_cover < 3 ? 'text-[#DC2626]' : 'text-[#059669]'}`}>
           {item.days_of_cover}일
         </span>
       )
@@ -88,15 +71,15 @@ export default function LogisticsInsightPage() {
     { 
       header: '공급 위험도', 
       accessor: (item: any) => (
-        <div className="w-full flex flex-col gap-1.5">
-          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-500">
+        <div className="w-full flex flex-col gap-1.5 min-w-[120px]">
+          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-400">
              <span>Risk Score</span>
-             <span>{item.stockout_risk_score}%</span>
+             <span className="text-slate-900">{item.stockout_risk_score}%</span>
           </div>
-          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden border border-white/5">
+          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200 shadow-inner">
             <div 
               className={`h-full rounded-full transition-all duration-1000 ${
-                item.stockout_risk_score > 70 ? 'bg-gradient-to-r from-rose-500 to-pink-600 shadow-[0_0_10px_rgba(244,63,94,0.4)]' : 'bg-gradient-to-r from-emerald-500 to-teal-600'
+                item.stockout_risk_score > 70 ? 'bg-red-500 shadow-[0_0_8px_rgba(220,38,38,0.2)]' : 'bg-[#059669]'
               }`} 
               style={{ width: `${item.stockout_risk_score}%` }} 
             />
@@ -109,8 +92,8 @@ export default function LogisticsInsightPage() {
       accessor: (item: any) => (
         <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border ${
           item.recommended_order_priority === 'Critical' 
-            ? 'bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.1)]' 
-            : 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+            ? 'bg-red-50 text-[#DC2626] border-red-100 shadow-sm' 
+            : 'bg-slate-50 text-slate-400 border-slate-200'
         }`}>
           {item.recommended_order_priority}
         </span>
@@ -120,20 +103,20 @@ export default function LogisticsInsightPage() {
 
   return (
     <DashboardLayout>
-      <div className="w-full space-y-8 animate-in fade-in duration-1000">
+      <div className="w-full space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="space-y-2">
-                <div className="flex items-center gap-3 text-emerald-400 font-black text-[10px] tracking-[0.3em] uppercase opacity-80">
-                    <div className="w-10 h-[1.5px] bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    Strategic Supply Chain Intel
+            <div className="space-y-3">
+                <div className="flex items-center gap-3 text-[#059669] font-black text-[10px] tracking-[0.3em] uppercase">
+                    <div className="w-12 h-1 bg-gradient-to-r from-emerald-400 to-teal-600 rounded-full" />
+                    Strategic Supply Chain Intelligence
                 </div>
-                <h1 className="text-5xl font-black text-white tracking-tighter drop-shadow-2xl italic">물류 공급망 및 재고 통찰</h1>
+                <h1 className="text-5xl font-black text-slate-900 tracking-tighter italic">물류 공급망 및 재고 통찰</h1>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 glass-card px-5 py-2.5 rounded-2xl shadow-2xl border border-white/5">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                LOGISTICS STATUS: <span className="text-white ml-1">OPTIMIZED</span>
+            <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
+                <div className="w-2 h-2 bg-[#059669] rounded-full animate-pulse" />
+                SCM CORE STATUS: <span className="text-slate-900 ml-1">OPTIMIZED</span>
             </div>
         </div>
 
@@ -141,8 +124,8 @@ export default function LogisticsInsightPage() {
         <ExecutiveSummaryBlock kpis={data.kpis} />
 
         {/* 2 & 3. Main Chart and AI Panel Row */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-stretch">
-            <div className="xl:col-span-8 flex flex-col h-full">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 items-stretch">
+            <div className="xl:col-span-8 flex flex-col h-full bg-white/80 rounded-[3rem] p-1 shadow-sm overflow-hidden border border-slate-100">
                 <DecisionStockChart 
                     title="재고 변동 및 공급 압력 지수" 
                     data={Array.from({length: 24}, (_, i) => ({ time: `${i}:00`, value: 80 - (Math.random() * 20) }))} 
@@ -172,5 +155,7 @@ export default function LogisticsInsightPage() {
 
       </div>
     </DashboardLayout>
+  );
+}
   );
 }
