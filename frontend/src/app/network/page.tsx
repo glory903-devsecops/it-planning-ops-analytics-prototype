@@ -9,7 +9,7 @@ import { AIAssistantPanel } from '../../components/ai/AIAssistantPanel';
 import { DataTable } from '../../components/ui/DataTable';
 import { usePagination } from '../../hooks/usePagination';
 
-export defaulexport default function NetworkInsightPage() {
+export default function NetworkInsightPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -141,21 +141,6 @@ export defaulexport default function NetworkInsightPage() {
           subtitle="실시간 API 통신 품질 및 트랜잭션 영향 범위 추적"
           data={paginatedData}
           columns={networkColumns}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          totalRecords={totalRecords}
-          itemsPerPage={itemsPerPage}
-          onExportCsv={() => DecisionApplication.exportToCSV(data.events, 'network_analytics_export')}
-        />
-
-      </div>
-    </DashboardLayout>
-  );
-}
-umns={networkColumns}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           currentPage={currentPage}
