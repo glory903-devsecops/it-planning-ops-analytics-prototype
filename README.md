@@ -1,4 +1,4 @@
-# ☕ Ediya AX Strategic Command Center (V3)
+# AX 기반 매장 운영 데이터 통합 분석 및 의사결정 시스템 (V3)
 
 <div align="center">
   <br />
