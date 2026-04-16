@@ -36,11 +36,20 @@ export default function LogisticsInsightPage() {
   if (loading || !data) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-full">
-           <div className="relative w-24 h-24">
-              <div className="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-[#003B6D] border-t-transparent rounded-full animate-spin"></div>
-           </div>
+        <div className="flex flex-col items-center justify-center h-full space-y-8 animate-pulse">
+            <div className="relative w-32 h-32">
+                <div className="absolute inset-0 border-[6px] border-white/5 rounded-full" />
+                <div className="absolute inset-0 border-[6px] border-emerald-500 border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(16,185,129,0.4)]" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 text-emerald-400" />
+                </div>
+            </div>
+            <div className="text-center space-y-2">
+                <h2 className="text-xl font-black text-white uppercase tracking-[0.3em] italic">Synchronizing Logistics Core</h2>
+                <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest justify-center">
+                    Connecting to SCM Global Data Stream
+                </div>
+            </div>
         </div>
       </DashboardLayout>
     );
@@ -64,35 +73,44 @@ export default function LogisticsInsightPage() {
   ];
 
   const logisticsColumns = [
-    { header: '품목명', accessor: 'item_name' as any, className: 'font-black' },
-    { header: '지점명', accessor: 'store_name' as any },
-    { header: '현재고', accessor: (item: any) => `${item.current_stock.toLocaleString()} EA`, className: 'font-bold' },
-    { header: '가용재고', accessor: (item: any) => `${item.available_stock.toLocaleString()} EA` },
-    { header: '안전재고', accessor: (item: any) => `${item.safety_stock.toLocaleString()} EA`, className: 'text-gray-400' },
+    { header: '품목명', accessor: 'item_name' as any, className: 'font-black text-white text-base' },
+    { header: '지점명', accessor: 'store_name' as any, className: 'font-bold' },
+    { header: '현재고', accessor: (item: any) => `${item.current_stock.toLocaleString()} EA`, className: 'font-black text-emerald-400' },
+    { header: '가용재고', accessor: (item: any) => `${item.available_stock.toLocaleString()} EA`, className: 'font-bold text-slate-300' },
     { 
       header: '공급 가능일', 
       accessor: (item: any) => (
-        <span className={`font-black ${item.days_of_cover < 3 ? 'text-red-600' : 'text-green-600'}`}>
+        <span className={`font-black tracking-tighter text-base ${item.days_of_cover < 3 ? 'text-rose-500 drop-shadow-[0_0_10px_rgba(244,63,94,0.3)]' : 'text-emerald-400'}`}>
           {item.days_of_cover}일
         </span>
       )
     },
     { 
-      header: '위험도', 
+      header: '공급 위험도', 
       accessor: (item: any) => (
-        <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div 
-            className={`h-full rounded-full ${item.stockout_risk_score > 70 ? 'bg-red-500' : 'bg-green-500'}`} 
-            style={{ width: `${item.stockout_risk_score}%` }} 
-          />
+        <div className="w-full flex flex-col gap-1.5">
+          <div className="flex justify-between text-[9px] font-black uppercase tracking-widest text-slate-500">
+             <span>Risk Score</span>
+             <span>{item.stockout_risk_score}%</span>
+          </div>
+          <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden border border-white/5">
+            <div 
+              className={`h-full rounded-full transition-all duration-1000 ${
+                item.stockout_risk_score > 70 ? 'bg-gradient-to-r from-rose-500 to-pink-600 shadow-[0_0_10px_rgba(244,63,94,0.4)]' : 'bg-gradient-to-r from-emerald-500 to-teal-600'
+              }`} 
+              style={{ width: `${item.stockout_risk_score}%` }} 
+            />
+          </div>
         </div>
       )
     },
     { 
       header: '우선순위', 
       accessor: (item: any) => (
-        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-          item.recommended_order_priority === 'Critical' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-50 text-gray-400'
+        <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border ${
+          item.recommended_order_priority === 'Critical' 
+            ? 'bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.1)]' 
+            : 'bg-slate-500/10 text-slate-400 border-slate-500/20'
         }`}>
           {item.recommended_order_priority}
         </span>
@@ -105,17 +123,17 @@ export default function LogisticsInsightPage() {
       <div className="w-full space-y-8 animate-in fade-in duration-1000">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div className="space-y-1">
-                <div className="flex items-center gap-2 text-[#003B6D] font-black text-[9px] tracking-[0.2em] uppercase opacity-70">
-                    <div className="w-8 h-[2px] bg-[#003B6D]" />
-                    EDIYA Logistics Intelligence
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+                <div className="flex items-center gap-3 text-emerald-400 font-black text-[10px] tracking-[0.3em] uppercase opacity-80">
+                    <div className="w-10 h-[1.5px] bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                    Strategic Supply Chain Intel
                 </div>
-                <h1 className="text-4xl font-black text-gray-900 tracking-tighter">물류 공급망 및 재고 통찰</h1>
+                <h1 className="text-5xl font-black text-white tracking-tighter drop-shadow-2xl italic">물류 공급망 및 재고 통찰</h1>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 bg-white/50 px-4 py-2 rounded-2xl border border-white/40 shadow-sm backdrop-blur-sm">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                시스템 상태: <span className="text-green-600 ml-1">STABLE</span>
+            <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 glass-card px-5 py-2.5 rounded-2xl shadow-2xl border border-white/5">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                LOGISTICS STATUS: <span className="text-white ml-1">OPTIMIZED</span>
             </div>
         </div>
 

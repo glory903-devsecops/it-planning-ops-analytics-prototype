@@ -36,11 +36,20 @@ export default function NetworkInsightPage() {
   if (loading || !data) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-full">
-           <div className="relative w-24 h-24">
-              <div className="absolute inset-0 border-4 border-blue-100 rounded-full"></div>
-              <div className="absolute inset-0 border-4 border-[#003B6D] border-t-transparent rounded-full animate-spin"></div>
-           </div>
+        <div className="flex flex-col items-center justify-center h-full space-y-8 animate-pulse">
+            <div className="relative w-32 h-32">
+                <div className="absolute inset-0 border-[6px] border-white/5 rounded-full" />
+                <div className="absolute inset-0 border-[6px] border-rose-500 border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(244,63,94,0.4)]" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 text-rose-400" />
+                </div>
+            </div>
+            <div className="text-center space-y-2">
+                <h2 className="text-xl font-black text-white uppercase tracking-[0.3em] italic">Synthesizing Network Fabric</h2>
+                <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest justify-center">
+                    Analyzing Global Endpoint Topologies
+                </div>
+            </div>
         </div>
       </DashboardLayout>
     );
@@ -64,23 +73,33 @@ export default function NetworkInsightPage() {
   ];
 
   const networkColumns = [
-    { header: '시각', accessor: (item: any) => `${item.hour}:${item.minute}`, className: 'font-bold' },
-    { header: '엔드포인트', accessor: 'endpoint_name' as any, className: 'font-black' },
-    { header: 'API 경로', accessor: 'api_route' as any, className: 'text-gray-400 font-mono text-[10px]' },
+    { 
+      header: '결제일자', 
+      accessor: (item: any) => `${item.year}-${String(item.month).padStart(2, '0')}-${String(item.day).padStart(2, '0')}`,
+      className: 'font-black text-slate-300'
+    },
+    { 
+      header: '결제시간', 
+      accessor: (item: any) => `${String(item.hour).padStart(2, '0')}:${String(item.minute).padStart(2, '0')}`,
+      className: 'font-mono text-rose-400'
+    },
+    { header: '엔드포인트', accessor: 'endpoint_name' as any, className: 'font-black text-white text-base' },
+    { header: 'API 경로', accessor: 'api_route' as any, className: 'text-slate-500 font-mono text-[10px] opacity-70' },
     { 
       header: '지연시간', 
       accessor: (item: any) => (
-        <span className={`font-black ${item.latency_ms > 1000 ? 'text-red-600' : 'text-[#003B6D]'}`}>
+        <span className={`font-black text-lg ${item.latency_ms > 1000 ? 'text-rose-500 animate-pulse drop-shadow-[0_0_10px_rgba(244,63,94,0.3)]' : 'text-emerald-400'}`}>
           {item.latency_ms}ms
         </span>
       )
     },
-    { header: '상태코드', accessor: 'status_code' as any },
     { 
       header: '영향 지수', 
       accessor: (item: any) => (
-        <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-          item.impact_score > 50 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-50 text-gray-400'
+        <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border ${
+          item.impact_score > 50 
+            ? 'bg-rose-500/10 text-rose-400 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.1)]' 
+            : 'bg-slate-500/10 text-slate-400 border-slate-500/20'
         }`}>
           Score: {item.impact_score.toFixed(0)}
         </span>
@@ -89,11 +108,11 @@ export default function NetworkInsightPage() {
     { 
       header: 'Anomaly', 
       accessor: (item: any) => item.anomaly_flag ? (
-        <span className="flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-red-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+        <span className="flex h-3 w-3 shadow-[0_0_15px_rgba(244,63,94,0.6)]">
+          <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-rose-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-600"></span>
         </span>
-      ) : <span className="text-green-500 font-black">NORMAL</span>
+      ) : <span className="text-emerald-500 font-black text-[10px] uppercase tracking-widest">Normal</span>
     }
   ];
 
@@ -102,17 +121,17 @@ export default function NetworkInsightPage() {
       <div className="w-full space-y-8 animate-in fade-in duration-1000">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div className="space-y-1">
-                <div className="flex items-center gap-2 text-red-600 font-black text-[9px] tracking-[0.2em] uppercase opacity-70">
-                    <div className="w-8 h-[2px] bg-red-600" />
-                    EDIYA Network Infrastructure Intelligence
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+                <div className="flex items-center gap-3 text-rose-400 font-black text-[10px] tracking-[0.3em] uppercase opacity-80">
+                    <div className="w-10 h-[1.5px] bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+                    Strategic Network Observability
                 </div>
-                <h1 className="text-4xl font-black text-gray-900 tracking-tighter">인프라 운영 및 이상 탐지</h1>
+                <h1 className="text-5xl font-black text-white tracking-tighter drop-shadow-2xl italic">인프라 운영 및 이상 탐지</h1>
             </div>
-            <div className="flex items-center gap-2 text-[10px] font-black text-red-600 bg-red-50 px-4 py-2 rounded-2xl border border-red-100 shadow-sm backdrop-blur-sm">
-                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
-                장애 관측 모드: <span className="font-black ml-1 uppercase">Active Monitoring</span>
+            <div className="flex items-center gap-2 text-[10px] font-black text-rose-400 glass-card px-5 py-2.5 rounded-2xl shadow-2xl border border-rose-500/20">
+                <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+                SURVEILLANCE MODE: <span className="text-white ml-1 font-black">ACTIVE MONITORING</span>
             </div>
         </div>
 
