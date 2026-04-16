@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F4F7FA; /* Light Gray */
-  --foreground: #0F1724; /* Deep Navy */
-  --card: rgba(255, 255, 255, 0.7);
+  --background: #F8FAFC; /* Near-white Slate for maximum contrast */
+  --foreground: #0F1724; /* Deep Navy for premium legibility */
+  --card: rgba(255, 255, 255, 0.95);
   --card-foreground: #0F1724;
-  --accent: #AF002D; /* Solid fallback for accessibility */
+  --accent: #AF002D;
   --glass-border: rgba(15, 23, 42, 0.08);
-  --glass-glow: rgba(175, 0, 45, 0.1);
+  --glass-glow: rgba(175, 0, 45, 0.05);
 }
 
 @theme inline {
@@ -27,33 +27,34 @@ body {
   margin: 0;
   padding: 0;
   background-image: 
-    radial-gradient(circle at 0% 0%, rgba(255, 122, 24, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(49, 145, 151, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 0% 0%, rgba(15, 23, 42, 0.02) 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, rgba(175, 0, 45, 0.02) 0%, transparent 40%);
   background-attachment: fixed;
 }
 
-/* Premium Light Glassmorphism Utilities */
+/* Premium V4 Bright Glassmorphism */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 10px 40px -10px rgba(15, 23, 36, 0.1);
+  box-shadow: 0 10px 40px -10px rgba(15, 23, 36, 0.08);
 }
 
 .glass-card {
-  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent), rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px -5px rgba(15, 23, 36, 0.05);
+  box-shadow: 0 4px 15px -5px rgba(15, 23, 36, 0.05);
 }
 
 .glass-card:hover {
-  border-color: rgba(175, 0, 45, 0.15);
-  box-shadow: 0 20px 40px -15px rgba(15, 23, 36, 0.12);
-  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(175, 0, 45, 0.1);
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 36, 0.1);
+  transform: translateY(-2px);
 }
 
 /* Tactical Gradient Typography */
@@ -62,8 +63,9 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: var(--accent); /* Fallback */
-  font-weight: 800;
+  color: var(--accent);
+  font-weight: 900;
+  letter-spacing: -0.02em;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

@@ -44,12 +44,20 @@ export function ExecutiveSummaryBlock({ kpis }: Props) {
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-2 mb-4">
-                <h3 className="text-4xl font-black gradient-text tracking-tighter">
+              <div className="flex items-baseline gap-1.5 mb-6">
+                <h3 className="text-5xl font-black gradient-text tracking-tighter tabular-nums">
                   {number}
                 </h3>
-                {unit && <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">{unit}</span>}
-                {kpi.subValue && <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest ml-2">{kpi.subValue}</span>}
+                {unit && (
+                  <span className="text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-lg">
+                    {unit}
+                  </span>
+                )}
+                {kpi.subValue && (
+                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest ml-auto self-end pb-1 border-b border-slate-100">
+                    {kpi.subValue}
+                  </span>
+                )}
               </div>
 
               <div className="flex items-center gap-4 mt-auto">

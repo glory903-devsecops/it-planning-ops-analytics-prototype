@@ -60,19 +60,9 @@ export default function SalesInsightPage() {
 
   const salesColumns = [
     { 
-      header: '년', 
-      accessor: (item: any) => item.year,
-      className: 'font-bold text-slate-400'
-    },
-    { 
-      header: '월', 
-      accessor: (item: any) => `${item.month}월`,
-      className: 'font-bold text-slate-400'
-    },
-    { 
-      header: '일', 
-      accessor: (item: any) => `${item.day}일`,
-      className: 'font-black text-slate-900'
+      header: '시간', 
+      accessor: (item: any) => `${String(item.hour).padStart(2, '0')}:${String(item.minute).padStart(2, '0')}`,
+      className: 'font-mono text-indigo-600 font-black'
     },
     { 
       header: '요일', 
@@ -83,9 +73,19 @@ export default function SalesInsightPage() {
       className: 'font-bold text-slate-500'
     },
     { 
-      header: '시간', 
-      accessor: (item: any) => `${String(item.hour).padStart(2, '0')}:${String(item.minute).padStart(2, '0')}`,
-      className: 'font-mono text-indigo-600 font-black'
+      header: '일', 
+      accessor: (item: any) => `${item.day}일`,
+      className: 'font-black text-slate-900'
+    },
+    { 
+      header: '월', 
+      accessor: (item: any) => `${item.month}월`,
+      className: 'font-bold text-slate-400'
+    },
+    { 
+      header: '년', 
+      accessor: (item: any) => item.year,
+      className: 'font-bold text-slate-400'
     },
     { header: '지점명', accessor: 'store_name' as any, className: 'font-black text-slate-900' },
     { 
