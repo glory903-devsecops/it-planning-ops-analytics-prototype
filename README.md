@@ -1,14 +1,16 @@
-# ☕ Ediya AX Decision Intelligence Platform (V2)
+# ☕ Ediya AX Strategic Command Center (V3)
 
 <div align="center">
   <br />
   <img src="https://img.shields.io/badge/Aesthetics-Glassmorphism-blue?style=for-the-badge&logo=css3&logoColor=white" />
   <img src="https://img.shields.io/badge/Architecture-Clean_Architecture-003B6D?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Performance-Local_Simulation_Engine-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/AI-Data_Driven_Agent-FF6F61?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Scale-1,000+_Transactions_/_Sec-success?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/AI-Autonomous_Strategy_Advisor-FF6F61?style=for-the-badge" />
   <br />
   <br />
-  <strong>"데이터가 흐르고, 인공지능이 결정하며, 비즈니스가 완성되는 곳."</strong>
+  <a href="https://glory903-devsecops.github.io/it-planning-ops-analytics-prototype/">
+    <img src="https://img.shields.io/badge/ENTER_STRATEGIC_COMMAND_CENTER-LIVE_DEMO-003B6D?style=for-the-badge&logo=rocket" height="40" />
+  </a>
   <br />
   <br />
 </div>
