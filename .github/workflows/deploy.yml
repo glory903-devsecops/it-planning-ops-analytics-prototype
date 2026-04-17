@@ -37,10 +37,19 @@ jobs:
         run: npm ci
       - name: Build with Next.js
         run: npm run build
+      - name: Package artifact
+        run: |
+          tar \
+            --dereference --hard-dereference \
+            --directory ./frontend/out \
+            -cvf "$RUNNER_TEMP/artifact.tar" \
+            .
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@a753861a5debcf57bf8b404356158c8e1e33150c
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3
         with:
-          path: ./frontend/out
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
 
   deploy:
     environment:
