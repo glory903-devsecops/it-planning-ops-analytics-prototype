@@ -49,20 +49,22 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
 
   const tableColumns = [
     { 
-      header: '연', 
-      sortable: true,
-      sortKey: 'timestamp',
-      accessor: (item: SalesEvent) => (
-        <span className="text-gray-400 font-bold">{item.timestamp.split('-')[0]}년</span>
-      )
-    },
-    { 
-      header: '월', 
+      header: '요일', 
       sortable: true,
       sortKey: 'timestamp',
       accessor: (item: SalesEvent) => {
-        const month = item.timestamp.split('-')[1];
-        return <span className="text-gray-700 font-black">{month}월</span>;
+        const date = new Date(item.timestamp.replace(' ', 'T'));
+        const dayOfWeek = ['일','월','화','수','목','금','토'][date.getDay()] + '요일';
+        return <span className="text-gray-500 font-bold bg-gray-50/50 px-2 py-1 rounded-md">{dayOfWeek}</span>;
+      }
+    },
+    { 
+      header: '시간', 
+      sortable: true,
+      sortKey: 'timestamp',
+      accessor: (item: SalesEvent) => {
+        const time = item.timestamp.split(' ')[1]?.substring(0, 5) || '00:00';
+        return <span className="text-[#003B6D] font-black">{time}</span>;
       }
     },
     { 
@@ -75,13 +77,21 @@ export function RecentIncidents({ incidents }: { incidents: SalesEvent[] }) {
       }
     },
     { 
-      header: '시간', 
+      header: '월', 
       sortable: true,
       sortKey: 'timestamp',
       accessor: (item: SalesEvent) => {
-        const time = item.timestamp.split(' ')[1]?.substring(0, 5) || '00:00';
-        return <span className="text-[#003B6D] font-black">{time}</span>;
+        const month = parseInt(item.timestamp.split('-')[1]);
+        return <span className="text-gray-700 font-black">{month}월</span>;
       }
+    },
+    { 
+      header: '년', 
+      sortable: true,
+      sortKey: 'timestamp',
+      accessor: (item: SalesEvent) => (
+        <span className="text-gray-400 font-bold">{item.timestamp.split('-')[0]}년</span>
+      )
     },
     { 
       header: '품목명', 
