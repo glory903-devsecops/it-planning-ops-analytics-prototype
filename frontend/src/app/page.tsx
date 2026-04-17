@@ -60,17 +60,17 @@ export default function SalesInsightPage() {
 
   const salesColumns = [
     { 
-      header: '시간', 
-      accessor: (item: any) => `${String(item.hour).padStart(2, '0')}:${String(item.minute).padStart(2, '0')}`,
-      className: 'font-mono text-indigo-600 font-black'
-    },
-    { 
       header: '요일', 
       accessor: (item: any) => {
         const date = new Date(item.year, item.month - 1, item.day);
         return ['일','월','화','수','목','금','토'][date.getDay()] + '요일';
       },
-      className: 'font-bold text-slate-500'
+      className: 'font-bold text-slate-500 bg-slate-50/50'
+    },
+    { 
+      header: '시간', 
+      accessor: (item: any) => `${String(item.hour).padStart(2, '0')}:${String(item.minute).padStart(2, '0')}`,
+      className: 'font-mono text-indigo-600 font-black'
     },
     { 
       header: '일', 
@@ -84,7 +84,7 @@ export default function SalesInsightPage() {
     },
     { 
       header: '년', 
-      accessor: (item: any) => item.year,
+      accessor: (item: any) => `${item.year}년`,
       className: 'font-bold text-slate-400'
     },
     { header: '지점명', accessor: 'store_name' as any, className: 'font-black text-slate-900' },

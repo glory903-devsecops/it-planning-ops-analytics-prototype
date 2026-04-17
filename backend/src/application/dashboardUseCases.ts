@@ -174,23 +174,34 @@ export class DashboardUseCases {
     if (filters.item) data = data.filter(d => d.item_name === filters.item);
 
     const headers = [
-      'ID', 'Date', 'Time', 'Store', 'Region', 'Item', 'Category', 
+      'ID', 'Year', 'Month', 'Day', 'DayOfWeek', 'Hour', 'Minute', 'Second',
+      'Store', 'Region', 'Item', 'Category', 
       'Qty', 'NetSales', 'Channel', 'Status'
     ];
     
-    const rows = data.map(d => [
-      d.transaction_id,
-      `${d.year}-${d.month}-${d.day}`,
-      `${d.hour}:${d.minute}:${d.second}`,
-      d.store_name,
-      d.region,
-      d.item_name,
-      d.item_category,
-      d.quantity,
-      d.net_sales,
-      d.channel,
-      d.status
-    ]);
+    const rows = data.map(d => {
+      const date = new Date(d.year, d.month - 1, d.day);
+      const dayOfWeek = ['일','월','화','수','목','금','토'][date.getDay()] + '요일';
+      
+      return [
+        d.transaction_id,
+        d.year,
+        d.month,
+        d.day,
+        dayOfWeek,
+        d.hour,
+        d.minute,
+        d.second,
+        d.store_name,
+        d.region,
+        d.item_name,
+        d.item_category,
+        d.quantity,
+        d.net_sales,
+        d.channel,
+        d.status
+      ];
+    });
 
     return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
   }
