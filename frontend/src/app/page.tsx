@@ -24,7 +24,7 @@ export default function SalesInsightPage() {
     paginatedData,
     totalRecords,
     itemsPerPage
-  } = usePagination(data?.recentSales || [], 12);
+  } = usePagination(data?.recentPayments || [], 12);
 
   useEffect(() => {
     async function loadData() {
@@ -60,32 +60,21 @@ export default function SalesInsightPage() {
 
   const salesColumns = [
     { 
-      header: '요일', 
-      accessor: (item: any) => {
-        const date = new Date(item.year, item.month - 1, item.day);
-        return ['일','월','화','수','목','금','토'][date.getDay()] + '요일';
-      },
-      className: 'font-bold text-slate-500 bg-slate-50/50'
-    },
-    { 
       header: '시간', 
-      accessor: (item: any) => `${String(item.hour).padStart(2, '0')}:${String(item.minute).padStart(2, '0')}`,
+      accessor: (item: any) => {
+        const dt = new Date(item.datetime);
+        return `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
+      },
       className: 'font-mono text-indigo-600 font-black'
     },
     { 
-      header: '일', 
-      accessor: (item: any) => `${item.day}일`,
-      className: 'font-black text-slate-900'
-    },
-    { 
-      header: '월', 
-      accessor: (item: any) => `${item.month}월`,
-      className: 'font-bold text-slate-400'
-    },
-    { 
-      header: '년', 
-      accessor: (item: any) => `${item.year}년`,
-      className: 'font-bold text-slate-400'
+      header: '날짜', 
+      accessor: (item: any) => {
+        const dt = new Date(item.datetime);
+        const dayOfWeek = ['일','월','화','수','목','금','토'][dt.getDay()];
+        return `${dt.getMonth() + 1}/${dt.getDate()} (${dayOfWeek})`;
+      },
+      className: 'font-bold text-slate-500 bg-slate-50/50'
     },
     { header: '지점명', accessor: 'store_name' as any, className: 'font-black text-slate-900' },
     { 
@@ -94,17 +83,22 @@ export default function SalesInsightPage() {
       className: 'font-bold text-slate-600' 
     },
     { 
-      header: '멤버십', 
+      header: '카테고리', 
+      accessor: 'item_category' as any, 
+      className: 'text-slate-500 text-sm' 
+    },
+    { 
+      header: '채널', 
       accessor: (item: any) => {
-        const tiers = ['VIP', 'Gold', 'Silver'];
-        const tier = tiers[Math.abs(item.transaction_id.hashCode ? item.transaction_id.hashCode() : item.quantity) % 3];
+        const channelColors: Record<string, string> = {
+          'POS': 'bg-blue-50 text-blue-700 border-blue-100',
+          '키오스크': 'bg-purple-50 text-purple-700 border-purple-100',
+          '배달앱': 'bg-orange-50 text-orange-700 border-orange-100'
+        };
+        const color = channelColors[item.channel] || 'bg-slate-50 text-slate-500 border-slate-200';
         return (
-          <span className={`px-2.5 py-1 rounded-md text-[10px] font-black border ${
-            tier === 'VIP' ? 'bg-purple-50 text-purple-700 border-purple-100' :
-            tier === 'Gold' ? 'bg-amber-50 text-amber-700 border-amber-100' :
-            'bg-slate-50 text-slate-500 border-slate-200'
-          }`}>
-            {tier}
+          <span className={`px-2.5 py-1 rounded-md text-[10px] font-black border ${color}`}>
+            {item.channel}
           </span>
         );
       }
@@ -167,10 +161,10 @@ export default function SalesInsightPage() {
             </div>
         </div>
 
-        {/* 4. Operational Data Table */}
+        {/* 4. Recent Payment History Table */}
         <DataTable 
-          title="원천 트랜잭션 데이터 (Operational Logs)"
-          subtitle="전국 매장 실시간 결제 로그 및 상세 분석 지표"
+          title="최근 결제 내역 (Recent Payment Logs)"
+          subtitle="실시간 결제 데이터 및 거래 채널별 분석"
           data={paginatedData}
           columns={salesColumns}
           searchTerm={searchTerm}
@@ -180,7 +174,7 @@ export default function SalesInsightPage() {
           onPageChange={handlePageChange}
           totalRecords={totalRecords}
           itemsPerPage={itemsPerPage}
-          onExportCsv={() => DecisionApplication.exportToCSV(data.recentSales, 'sales_analytics_export')}
+          onExportCsv={() => DecisionApplication.exportToCSV(data.recentPayments, 'recent_payments_export')}
         />
 
       </div>
