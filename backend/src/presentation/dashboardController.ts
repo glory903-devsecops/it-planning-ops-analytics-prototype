@@ -14,8 +14,8 @@ export class DashboardController {
   public async exportCSV(req: Request, res: Response) {
     try {
       const filters = {
-        store: req.query.store,
-        item: req.query.item
+        store: typeof req.query.store === 'string' ? req.query.store : undefined,
+        item: typeof req.query.item === 'string' ? req.query.item : undefined
       };
       const csv = await dashboardUseCases.getCSVData(filters);
       

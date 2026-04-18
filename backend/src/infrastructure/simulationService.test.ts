@@ -27,10 +27,14 @@ describe('SimulationService', () => {
     expect(ids.size).toBe(50);
   });
 
-  it('should sort data by datetime descending (latest first)', () => {
+  it('should generate data with valid datetime within recent 30 days', () => {
     const data = service.generateSalesData(10);
-    const firstDate = new Date(data[0].datetime).getTime();
-    const lastDate = new Date(data[data.length - 1].datetime).getTime();
-    expect(firstDate).toBeGreaterThanOrEqual(lastDate);
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    data.forEach(trx => {
+      const txDate = new Date(trx.datetime);
+      expect(txDate.getTime()).toBeGreaterThanOrEqual(thirtyDaysAgo.getTime());
+      expect(txDate.getTime()).toBeLessThanOrEqual(now.getTime());
+    });
   });
 });

@@ -5,12 +5,41 @@ const SERVICES = ['POS 연동 서버', 'ERP 게이트웨이', '배달 플랫폼 
 class NetworkManager {
     constructor() {
         this.recentEvents = [];
-        // Generate initial history
+        this.history = [];
+        this.initHistory();
+        // Generate initial events
         const now = Date.now();
         for (let i = 0; i < 30; i++) {
             this.recentEvents.push(this.generateRandomEvent(now - Math.random() * 3600000));
         }
         this.recentEvents.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    }
+    initHistory() {
+        const now = Date.now();
+        for (let i = 24; i >= 0; i--) {
+            const time = new Date(now - i * 3600000);
+            const snapshot = { time: time.getHours().toString().padStart(2, '0') + ':00' };
+            SERVICES.forEach(service => {
+                snapshot[service] = 20 + Math.floor(Math.random() * 80);
+            });
+            this.history.push(snapshot);
+        }
+    }
+    takeSnapshot() {
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        const snapshot = { time: timeStr };
+        // Average recent latencies per service for the snapshot
+        SERVICES.forEach(service => {
+            const serviceEvents = this.recentEvents.filter(e => e.service === service).slice(0, 5);
+            const avg = serviceEvents.length > 0
+                ? Math.round(serviceEvents.reduce((acc, curr) => acc + curr.latencyMs, 0) / serviceEvents.length)
+                : 50;
+            snapshot[service] = avg;
+        });
+        this.history.push(snapshot);
+        if (this.history.length > 50)
+            this.history.shift();
     }
     generateRandomEvent(timestamp) {
         const isError = Math.random() < 0.05;

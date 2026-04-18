@@ -10,7 +10,7 @@ import {
   UserCheck, Activity, BrainCircuit, ArrowUpRight, BarChart3
 } from 'lucide-react';
 import { ExecutiveKpi, StrategicInsight } from '@/domain/types';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { ExecutiveSummaryBlock } from '@/components/dashboard/ExecutiveSummaryBlock';
 import { DataDrivenAIPanel } from '@/components/dashboard/DataDrivenAIPanel';
 
