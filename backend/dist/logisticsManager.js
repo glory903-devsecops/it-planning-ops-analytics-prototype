@@ -10,7 +10,41 @@ const STORES = [
 class LogisticsManager {
     constructor() {
         this.inventories = [];
+        this.history = [];
+        this.logisticsOrders = [];
         this.initInventories();
+        this.initHistory();
+        this.generateHistoricalOrders(3000);
+    }
+    initHistory() {
+        const now = Date.now();
+        // Generate some mock history for the initial chart
+        for (let i = 24; i >= 0; i--) {
+            const time = new Date(now - i * 3600000);
+            const snapshot = { time: time.getHours().toString().padStart(2, '0') + ':00' };
+            // Add some random variation per store/item
+            this.inventories.forEach(inv => {
+                inv.items.forEach(item => {
+                    const key = `${inv.storeName} - ${item.name}`;
+                    snapshot[key] = Math.floor(60 + Math.random() * 40); // 60-100% capacity
+                });
+            });
+            this.history.push(snapshot);
+        }
+    }
+    takeSnapshot() {
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        const snapshot = { time: timeStr };
+        this.inventories.forEach(inv => {
+            inv.items.forEach(item => {
+                const key = `${inv.storeName} - ${item.name}`;
+                snapshot[key] = Math.round((item.stock / item.maxStock) * 100);
+            });
+        });
+        this.history.push(snapshot);
+        if (this.history.length > 50)
+            this.history.shift();
     }
     initInventories() {
         STORES.forEach(store => {
@@ -90,8 +124,48 @@ class LogisticsManager {
                 avgStockLevel: Math.round((totalStock / totalMax) * 100) + '%',
                 pendingOrders: criticalStores * 2 // mock
             },
-            inventories: this.inventories
+            inventories: this.inventories,
+            recentOrders: this.logisticsOrders.slice(0, 15),
+            allOrders: this.logisticsOrders
         };
+    }
+    generateHistoricalOrders(count) {
+        const now = Date.now();
+        const items = ['원두', '우유', '종이컵', '시럽', '초코파우더', '원액'];
+        for (let i = 0; i < count; i++) {
+            const store = STORES[Math.floor(Math.random() * STORES.length)];
+            const item = items[Math.floor(Math.random() * items.length)];
+            const qty = Math.floor(Math.random() * 50) + 1;
+            // HQ Economics Logic
+            const unitPriceMap = {
+                '원두': 15000,
+                '우유': 2500,
+                '종이컵': 50,
+                '시럽': 8000,
+                '초코파우더': 6000,
+                '원액': 12000
+            };
+            const unitPrice = unitPriceMap[item] || 5000;
+            const sellingPrice = unitPrice * qty;
+            const marginRate = 0.25 + (Math.random() * 0.1);
+            const distributionMargin = Math.round(sellingPrice * marginRate);
+            const purchaseCost = sellingPrice - distributionMargin;
+            const timeOffset = Math.random() * 30 * 24 * 60 * 60 * 1000;
+            const timestamp = new Date(now - timeOffset);
+            this.logisticsOrders.push({
+                order_id: `LOG-${Math.floor(Math.random() * 90000) + 10000}`,
+                timestamp: timestamp.toISOString().replace('T', ' ').substring(0, 19),
+                store_name: store,
+                item_name: item,
+                qty: qty,
+                unit_price: unitPrice,
+                total_price: sellingPrice,
+                purchase_cost: purchaseCost,
+                distribution_margin: distributionMargin,
+                status: '배송완료'
+            });
+        }
+        this.logisticsOrders.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
     }
 }
 exports.LogisticsManager = LogisticsManager;

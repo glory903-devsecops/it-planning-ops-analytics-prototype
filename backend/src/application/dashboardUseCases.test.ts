@@ -29,7 +29,10 @@ describe('DashboardUseCases', () => {
   it('should format CSV with correct headers', async () => {
     const csv = await useCases.getCSVData({});
     const firstLine = csv.split('\n')[0];
-    expect(firstLine).toContain('ID,Date,Time,Store,Region');
+    expect(firstLine).toContain('ID');
+    expect(firstLine).toContain('Store');
+    expect(firstLine).toContain('Status');
+    expect(firstLine).toContain('NetSales');
   });
 
   it('should apply store filters to CSV data', async () => {

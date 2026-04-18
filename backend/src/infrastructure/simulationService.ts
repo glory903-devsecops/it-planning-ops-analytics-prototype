@@ -168,18 +168,27 @@ export class SimulationService {
       MENU_CONFIGS.forEach(menu => {
         const current = 50 + Math.random() * 450;
         const safety = 100;
+        const reserved = Math.floor(current * 0.1);
+        const now = new Date();
         this.inventorySnapshots.push({
-          snapshot_id: `INV-${store.id}-${menu.id}`,
+          inventory_id: `INV-${store.id}-${menu.id}`,
+          year: now.getFullYear(),
+          month: now.getMonth() + 1,
+          day: now.getDate(),
+          hour: now.getHours(),
+          minute: now.getMinutes(),
           store_id: store.id,
           store_name: store.name,
           item_id: menu.id,
           item_name: menu.name,
           current_stock: Math.floor(current),
-          available_stock: Math.floor(current * 0.9),
+          reserved_stock: reserved,
+          available_stock: Math.max(0, Math.floor(current * 0.9) - reserved),
           safety_stock: safety,
-          days_of_cover: Math.floor(current / 15),
+          days_of_cover: Math.max(1, Math.floor(current / 15)),
           stockout_risk_score: current < safety ? 80 + Math.random() * 20 : Math.random() * 30,
-          recommended_order_priority: current < safety ? 'Critical' : 'Normal'
+          recommended_order_quantity: current < safety ? Math.floor((safety - current) * 1.5) : 0,
+          recommended_order_priority: current < safety ? 'Critical' : 'Medium'
         });
       });
     });
